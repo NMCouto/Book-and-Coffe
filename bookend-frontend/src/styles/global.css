@@ -1,0 +1,104 @@
+/* Cores, fontes e estilos básicos para o projeto */
+:root {
+    /* Cores básicas */
+    --color-primary-blue: #1F95DE;
+    --color-coffee-dark: #4E342E;
+    --color-background: #E0F7FA;
+
+    /* Gradiente de fundo */
+    --bg-gradiente: linear-gradient(135deg, #A7FFEB 0%, #80DEEA 100%);
+
+    /* Tons Neutros (Textos e Superfícies) */
+    --color-white: #FFFFFF;
+    --color-gray-light: #F5F5F5;    /* Fundo dos inputs */
+    --color-gray-medium: #BDBDBD;   /* Bordas ou textos secundários */
+    --color-gray-dark: #424242;     /* Texto padrão */
+    --color-shadow: rgba(0, 0, 0, 0.1); /* Sombra suave */
+
+    --font-family-base: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  
+    --font-size-sm: 0.875rem; /* 14px */
+    --font-size-md: 1rem;     /* 16px */
+    --font-size-lg: 1.25rem;  /* 20px */
+    --font-size-xl: 1.5rem;   /* 24px */
+
+    /* Espaçamento e bordas */
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;      /* Usado nos cards menores */
+    --border-radius-lg: 15px;     /* Usado nos containers principais */
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+}
+
+/* RESET BÁSICO  */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family-base);
+  color: var(--color-gray-dark);
+  background: var(--bg-gradient);
+  background-attachment: fixed; /* Mantém o gradiente fixo ao rolar */
+  min-height: 100vh;
+  /* Centraliza o conteúdo se for uma página única como login */
+  display: flex; 
+  flex-direction: column;
+}
+
+/* Classes utilitárias */
+
+/* Container Branco (Base para todos os cards) */
+.card {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 4px 6px var(--color-shadow);
+  padding: var(--spacing-lg);
+}
+
+/* Inputs padrão (Iguais da tela de cadastro) */
+.input-field {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--color-gray-light);
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--color-primary-blue);
+  background-color: var(--color-white);
+}
+
+/* Botões Principais */
+.btn-primary {
+  background-color: var(--color-primary-blue);
+  color: var(--color-white);
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-weight: bold;
+  transition: opacity 0.2s;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+/* Cabeçalhos de Seção (Ex: "Cadastrar Cliente") */
+.section-header {
+  background-color: var(--color-primary-blue);
+  color: var(--color-white);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  text-align: center;
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-md);
+}

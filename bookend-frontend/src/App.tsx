@@ -1,35 +1,40 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Sidebar } from './components/Sidebar';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Crie arquivos vazios nessas pastas só para o erro sumir por enquanto
+import { Login } from './pages/login'; 
+import { Cadastro } from './pages/cadastro';
+import { Kanban } from './pages/kanban';
 
+// Layout que exibe a Sidebar + O conteúdo da página ao lado
+function LayoutComSidebar({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div style={{ display: 'flex' }}>
+      <Sidebar />
+      <main className="main-content">
+        {children}
+      </main>
+    </div>
+  );
 }
 
-export default App
+export function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        
+        <Route path="/cadastro" element={<Cadastro />} />
+
+        {/* Rotas com Sidebar */}
+        <Route path="/kanban" element={
+          <LayoutComSidebar>
+            <Kanban />
+          </LayoutComSidebar>
+        } />
+        
+        {/* Adicione outras rotas aqui */}
+      </Routes>
+    </BrowserRouter>
+  )
+}
