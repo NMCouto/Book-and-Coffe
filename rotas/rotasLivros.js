@@ -25,7 +25,10 @@ export default function registrarRotasLivros(app){
     //atualiza um livro existente pelo id 
     app.put("/livros/:id", async(req, res) => {
         try{
-            const novolivro = await livro.findByIdAndUpdate(req.params.id, req.body);
+            const novolivro = await livro.findByIdAndUpdate(req.params.id, 
+                req.body,
+                { new: true }
+            );
             res.json(novolivro);
         }catch (error){
             res.send(error);

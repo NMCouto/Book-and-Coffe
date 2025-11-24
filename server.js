@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 
 import registrarRotasLivros from "./rotas/rotasLivros.js";
 import registrarRotasClientes from "./rotas/rotasClientes.js";
+import registrarRotasEmprestimos from "./rotas/rotasEmprestimos.js";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ connectDB();
 //as rotas ficam resgistradas aqui 
 registrarRotasLivros(app);
 registrarRotasClientes(app);
+registrarRotasEmprestimos(app);
 
 
 app.listen(PORT, () => {
