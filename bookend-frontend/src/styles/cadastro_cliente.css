@@ -1,0 +1,130 @@
+/* Fundo Escuro (Overlay) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Escurece o fundo */
+  z-index: 2000; /* Fica acima da Sidebar */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* O Card Branco */
+.modal-card {
+  background: white;
+  width: 600px;
+  max-width: 90%;
+  border-radius: 16px;
+  padding: 30px;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Título */
+.modal-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* --- STEPPER (As bolinhas) --- */
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+/* Linha cinza atrás das bolinhas */
+.stepper::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px; /* Tamanho da linha */
+  height: 2px;
+  background-color: #E0E0E0;
+  z-index: 0;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1; /* Fica acima da linha */
+  background: white;
+  padding: 0 10px;
+}
+
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: white;
+  border: 2px solid #E0E0E0;
+  color: #9E9E9E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-bottom: 5px;
+  transition: all 0.3s;
+}
+
+.step-label {
+  font-size: 0.75rem;
+  color: #757575;
+  text-align: center;
+  width: 80px;
+}
+
+/* Estilo do Passo Ativo */
+.step-item.active .step-circle {
+  background-color: var(--color-primary-blue);
+  border-color: var(--color-primary-blue);
+  color: white;
+}
+
+.step-item.active .step-label {
+  font-weight: bold;
+  color: #000;
+}
+
+/* Botões do Rodapé */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid #ccc;
+  padding: 10px 24px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-solid {
+  background-color: var(--color-primary-blue);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}

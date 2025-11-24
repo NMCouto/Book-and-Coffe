@@ -1,35 +1,83 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { List } from 'phosphor-react'; // Ícone do menu (Hambúrguer)
 
-function App() {
-  const [count, setCount] = useState(0)
+// Componentes
+import { Sidebar } from './components/Sidebar';
+
+// Páginas
+import { Login } from './pages/login'; 
+import { Clientes } from './pages/clientes';
+import { Kanban } from './pages/kanban';
+
+function LayoutComSidebar({ children }: { children: React.ReactNode }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="layout-container">
+      
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)} 
+      />
+
+      <div className="content-area">
+        
+        {/* 1. CABEÇALHO (TOPO) */}
+        <header className="top-bar">
+          <div className="top-bar-left">
+            {/* Botão Hambúrguer Limpo */}
+            <button 
+              className="menu-trigger" 
+              onClick={() => setIsSidebarOpen(true)}
+            >
+              <List size={32} />
+            </button>
+
+            {/* ÁREA DA MARCA */}
+            <div className="header-brand">
+              <img 
+                src="/assets/logocafe.png" 
+                alt="Logo Bookend" 
+                className="header-logo-img" 
+              />
+              <span className="header-brand-name">
+                Book and coffe
+              </span>
+            </div>
+
+          </div>
+        </header>
+
+        {/* 2. ONDE ENTRAM AS TELAS (Clientes, Kanban, etc) */}
+        <main className="page-content">
+          {children}
+        </main>
+        
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+
+        <Route path="/kanban" element={
+          <LayoutComSidebar>
+            <Kanban />
+          </LayoutComSidebar>
+        } />
+        
+        <Route path="/clientes" element={
+          <LayoutComSidebar>
+            <Clientes />
+          </LayoutComSidebar>
+        } />
+        
+      </Routes>
+    </BrowserRouter>
+  )
+}
