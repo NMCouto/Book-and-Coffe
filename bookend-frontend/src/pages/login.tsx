@@ -34,7 +34,7 @@ export function Login() {
         <header className="login-header">
           <div className="logo-container">
             <img src="/assets/logocafe.png" alt="Xícara" className="logo-img" />
-            <h1 className="brand-title">Bookend coffe</h1>
+            <h1 className="brand-title">Book and coffe</h1>
           </div>
           <h2 className="login-subtitle">Realize o login para continuar</h2>
         </header>
