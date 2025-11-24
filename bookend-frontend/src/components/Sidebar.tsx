@@ -1,5 +1,7 @@
-import { Link, useLocation } from 'react-router-dom';
-import { X, Plus } from 'phosphor-react'; 
+//import { useContext } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { X, Plus, SignOut } from 'phosphor-react';
+//import { AuthContext } from '../contexts/AuthContext';
 import '../styles/Sidebar.css';
 
 interface SidebarProps {
@@ -9,9 +11,17 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const location = useLocation(); // Para saber em qual página estamos
+  const navigate = useNavigate(); // Hook de navegação
+  //const { signOut } = useContext(AuthContext);
 
   // Função auxiliar para verificar se o link está ativo
   const isActive = (path: string) => location.pathname === path ? 'active' : '';
+
+  function handleLogout() {
+    //signOut(); // Limpa o usuário do localStorage/Contexto
+    navigate('/'); // Redireciona para o Login
+    onClose(); // Fecha a sidebar (caso esteja no mobile)
+  }
 
   return (
     <>
@@ -68,6 +78,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               Quadro 1
             </Link>
           </div>
+        </div>
+
+        <div className="sidebar-footer">
+            <div className="divider"></div>
+            
+            <button className="nav-link btn-logout" onClick={handleLogout}>
+                <SignOut size={20} />
+                <span>Sair</span>
+            </button>
         </div>
 
       </aside>

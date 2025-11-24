@@ -7,30 +7,54 @@ import { Sidebar } from './components/Sidebar';
 
 // Páginas
 import { Login } from './pages/login'; 
-import { Cliente } from './pages/clientes';
+import { Clientes } from './pages/clientes';
 import { Kanban } from './pages/kanban';
 
 function LayoutComSidebar({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div style={{ position: 'relative', minHeight: '100vh' }}>
+    <div className="layout-container">
       
-      <button 
-        className="menu-trigger" 
-        onClick={() => setIsSidebarOpen(true)}
-      >
-        <List size={32} />
-      </button>
-
       <Sidebar 
         isOpen={isSidebarOpen} 
         onClose={() => setIsSidebarOpen(false)} 
       />
 
-      <main className="main-content" style={{ padding: '20px', paddingTop: '60px' }}>
-        {children}
-      </main>
+      <div className="content-area">
+        
+        {/* 1. CABEÇALHO (TOPO) */}
+        <header className="top-bar">
+          <div className="top-bar-left">
+            {/* Botão Hambúrguer Limpo */}
+            <button 
+              className="menu-trigger" 
+              onClick={() => setIsSidebarOpen(true)}
+            >
+              <List size={32} />
+            </button>
+
+            {/* ÁREA DA MARCA */}
+            <div className="header-brand">
+              <img 
+                src="/assets/logocafe.png" 
+                alt="Logo Bookend" 
+                className="header-logo-img" 
+              />
+              <span className="header-brand-name">
+                Book and coffe
+              </span>
+            </div>
+
+          </div>
+        </header>
+
+        {/* 2. ONDE ENTRAM AS TELAS (Clientes, Kanban, etc) */}
+        <main className="page-content">
+          {children}
+        </main>
+        
+      </div>
     </div>
   );
 }
@@ -49,7 +73,7 @@ export function App() {
         
         <Route path="/clientes" element={
           <LayoutComSidebar>
-            <Cliente />
+            <Clientes />
           </LayoutComSidebar>
         } />
         
