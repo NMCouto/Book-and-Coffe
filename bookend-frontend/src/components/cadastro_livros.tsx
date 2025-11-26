@@ -6,7 +6,7 @@ interface ModalProps {
   onClose: () => void;
 }
 
-export function CadastroCliente({ isOpen, onClose }: ModalProps) {
+export function CadastroLivro({ isOpen, onClose }: ModalProps) {
   const [step, setStep] = useState(1); // Controla se é tela 1 ou 2
 
   if (!isOpen) return null;
@@ -16,7 +16,7 @@ export function CadastroCliente({ isOpen, onClose }: ModalProps) {
   const handleBack = () => setStep(1);
   
   const handleFinish = () => {
-    alert("Cliente Cadastrado!"); // Aqui entraria a lógica de salvar
+    alert("Livro Cadastrado!"); // Aqui entraria a lógica de salvar
     setStep(1); // Reseta para o próximo
     onClose();
   };
@@ -37,7 +37,7 @@ export function CadastroCliente({ isOpen, onClose }: ModalProps) {
 
           <div className={`step-item ${step === 2 ? 'active' : ''}`}>
             <div className="step-circle">2</div>
-            <span className="step-label">Informações de contato</span>
+            <span className="step-label">Informações extras</span>
           </div>
         </div>
 
@@ -47,28 +47,36 @@ export function CadastroCliente({ isOpen, onClose }: ModalProps) {
             /* ETAPA 1 */
             <div className="step-content">
               <div className="form-group">
-                <label className="form-label">Nome Completo</label>
-                <input type="text" className="form-input" placeholder="Insira o nome completo" />
+                <label className="form-label">Título</label>
+                <input type="text" className="form-input" placeholder="Insira o título" />
               </div>
               <div className="form-group">
-                <label className="form-label">CPF</label>
-                <input type="text" className="form-input" placeholder="Insira o CPF" />
+                <label className="form-label">Gênero</label>
+                <input type="text" className="form-input" placeholder="Insira o gênero" />
               </div>
               <div className="form-group">
-                <label className="form-label">Data de nascimento</label>
-                <input type="text" className="form-input" placeholder="DD/MM/AAAA" />
+                <label className="form-label">ISBN</label>
+                <input type="text" className="form-input" placeholder="Insira o ISBN" />
               </div>
             </div>
           ) : (
             /* ETAPA 2 */
             <div className="step-content">
               <div className="form-group">
-                <label className="form-label">Contato principal</label>
-                <input type="text" className="form-input" placeholder="Insira o número de telefone" />
+                <label className="form-label">Volume</label>
+                <input type="text" className="form-input" placeholder="Insira o volume" />
               </div>
               <div className="form-group">
-                <label className="form-label">CEP</label>
-                <input type="text" className="form-input" placeholder="Insira o CEP" />
+                <label className="form-label">Autor</label>
+                <input type="text" className="form-input" placeholder="Insira o autor" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Editora</label>
+                <input type="text" className="form-input" placeholder="Insira a editora" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Data de lancamento</label>
+                <input type="text" className="form-input" placeholder="DD/MM/AAAA" />
               </div>
               {/* Espaço vazio para manter altura se necessário */}
               <div style={{height: '85px'}}></div> 

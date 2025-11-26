@@ -9,6 +9,7 @@ import { Sidebar } from './components/Sidebar';
 import { Login } from './pages/login'; 
 import { Clientes } from './pages/clientes';
 import { Kanban } from './pages/kanban';
+import { Livros } from './pages/livros';
 
 function LayoutComSidebar({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -74,6 +75,12 @@ export function App() {
         <Route path="/clientes" element={
           <LayoutComSidebar>
             <Clientes />
+          </LayoutComSidebar>
+        } />
+
+        <Route path="/livros" element={
+          <LayoutComSidebar>
+            <Livros />
           </LayoutComSidebar>
         } />
         
