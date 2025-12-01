@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadro Kanban</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/...font-awesome.min.css" />
+</head>
+    <body>
+        <div clss="app">
+            <div class="task-input-container">
+                <div class="task-input-fields">
+                    <input type="text" id="taskTitle" placeholder="Título da nova tarefa">
+                    <select id="taskColumn">
+                        <option value="1">Devoluções</option>
+                        <option value="2">Pendências</option>
+                        <option value="3">A fazer</option>
+                        <option value="4">Em andamento</option>
+                        <option value="5">Concluído</option>
+                    </select>
+                    <button id="addTaskBtn">Adicionar</button>
+                </div>
+            </div>
+            <main class="kanban">
+                <div class="kanban-column" data-id="1">
+                    <div class="kanban-title">
+                        <h2>Devoluções</h2>
+                        <button class="add-card"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="kanban-cards">
+                        <!--Cartões serão inseridos aqui!-->
+                        <div class="kanban-card" draggable="true">
+                            <div class="badge medium">
+                                <span> Média prioridade </span>
+                            </div>
+                            <p class="card-title">Revisar documento do projeto</p>
+                            <div class="card-infos">
+                                <div class="card-icons">
+                                    <p><i class="fa-regular fa-comment"></i>1</p>
+                                </div>
+                                <div class="user">
+                                    <img src="images/avatar2.jpg" alt="Avatar" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="kanban-column" data-id="2">
+                    <div class="kanban-title">
+                        <h2>Pendências</h2>
+                        <button class="add-card"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="kanban-cards">
+                        <!--Cartões serão inseridos aqui!-->
+                        <div class="kanban-card" draggable="true">
+                            <div class="badge medium">
+                                <span> Média prioridade </span>
+                            </div>
+                            <p class="card-title">Revisar documento do projeto</p>
+                            <div class="card-infos">
+                                <div class="card-icons">
+                                    <p><i class="fa-regular fa-comment"></i>1</p>
+                                </div>
+                                <div class="user">
+                                    <img src="images/avatar2.jpg" alt="Avatar" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="kanban-column" data-id="3">
+                    <div class="kanban-title">
+                        <h2>A fazer</h2>
+                        <button class="add-card"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="kanban-cards">
+                        <!--Cartões serão inseridos aqui!-->
+                        <div class="kanban-card" draggable="true">
+                            <div class="badge medium">
+                                <span> Média prioridade </span>
+                            </div>
+                            <p class="card-title">Revisar documento do projeto</p>
+                            <div class="card-infos">
+                                <div class="card-icons">
+                                    <p><i class="fa-regular fa-comment"></i>1</p>
+                                </div>
+                                <div class="user">
+                                    <img src="images/avatar2.jpg" alt="Avatar" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="kanban-column" data-id="4">
+                    <div class="kanban-title">
+                        <h2>Em andamento</h2>
+                        <button class="add-card"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="kanban-cards">
+                        <!--Cartões serão inseridos aqui!-->
+                        <div class="kanban-card" draggable="true">
+                            <div class="badge medium">
+                                <span> Média prioridade </span>
+                            </div>
+                            <p class="card-title">Revisar documento do projeto</p>
+                            <div class="card-infos">
+                                <div class="card-icons">
+                                    <p><i class="fa-regular fa-comment"></i>1</p>
+                                </div>
+                                <div class="user">
+                                    <img src="images/avatar2.jpg" alt="Avatar" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="kanban-column" data-id="5">
+                    <div class="kanban-title">
+                        <h2>Concluído</h2>
+                        <button class="add-card"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="kanban-cards">
+                        <!--Cartões serão inseridos aqui!-->
+                        <div class="kanban-card" draggable="true">
+                            <div class="badge medium">
+                                <span> Média prioridade </span>
+                            </div>
+                            <p class="card-title">Revisar documento do projeto</p>
+                            <div class="card-infos">
+                                <div class="card-icons">
+                                    <p><i class="fa-regular fa-comment"></i>1</p>
+                                </div>
+                                <div class="user">
+                                    <img src="images/avatar2.jpg" alt="Avatar" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <script src="script.js"></script>
+    </body>
+</html>
