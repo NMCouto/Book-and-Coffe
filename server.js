@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import cors from "cors";
 
 import registrarRotasLivros from "./rotas/rotasLivros.js";
 import registrarRotasClientes from "./rotas/rotasClientes.js";
@@ -12,6 +13,10 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.use(cors({
+    origin: ["http://127.0.0.1:5500", "http://localhost:3000"]
+}));
+
 
 // Conecta ao MongoDB
 const connectDB = async () => {

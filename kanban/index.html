@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quadro Kanban</title>
     <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/...font-awesome.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
     <body>
         <div clss="app">
@@ -24,6 +25,7 @@
                 </div>
             </div>
             <main class="kanban">
+                <!--DEVOLUÇõES-->
                 <div class="kanban-column" data-id="1">
                     <div class="kanban-title">
                         <h2>Devoluções</h2>
@@ -41,12 +43,18 @@
                                     <p><i class="fa-regular fa-comment"></i>1</p>
                                 </div>
                                 <div class="user">
-                                    <img src="images/avatar2.jpg" alt="Avatar" />
+                                    <button class="edit-btn">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button class="delete-btn">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!--Pendências-->
                 <div class="kanban-column" data-id="2">
                     <div class="kanban-title">
                         <h2>Pendências</h2>
@@ -56,7 +64,12 @@
                         <!--Cartões serão inseridos aqui!-->
                         <div class="kanban-card" draggable="true">
                             <div class="badge medium">
-                                <span> Média prioridade </span>
+                                <span> prioridade </span>
+                                <select class="priority-select">
+                                    <option value="low">Baixa</option>
+                                    <option value="medium">Média</option>
+                                    <option value="high" selected>Alta</option>
+                                </select>
                             </div>
                             <p class="card-title">Revisar documento do projeto</p>
                             <div class="card-infos">
@@ -64,12 +77,18 @@
                                     <p><i class="fa-regular fa-comment"></i>1</p>
                                 </div>
                                 <div class="user">
-                                    <img src="images/avatar2.jpg" alt="Avatar" />
+                                    <button class="edit-btn">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button class="delete-btn">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!--A fazer-->
                 <div class="kanban-column" data-id="3">
                     <div class="kanban-title">
                         <h2>A fazer</h2>
@@ -87,12 +106,18 @@
                                     <p><i class="fa-regular fa-comment"></i>1</p>
                                 </div>
                                 <div class="user">
-                                    <img src="images/avatar2.jpg" alt="Avatar" />
+                                    <button class="edit-btn">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button class="delete-btn">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!--Em andamento-->
                 <div class="kanban-column" data-id="4">
                     <div class="kanban-title">
                         <h2>Em andamento</h2>
@@ -110,12 +135,18 @@
                                     <p><i class="fa-regular fa-comment"></i>1</p>
                                 </div>
                                 <div class="user">
-                                    <img src="images/avatar2.jpg" alt="Avatar" />
+                                    <button class="edit-btn">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button class="delete-btn">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!--Concluído-->
                 <div class="kanban-column" data-id="5">
                     <div class="kanban-title">
                         <h2>Concluído</h2>
@@ -133,7 +164,12 @@
                                     <p><i class="fa-regular fa-comment"></i>1</p>
                                 </div>
                                 <div class="user">
-                                    <img src="images/avatar2.jpg" alt="Avatar" />
+                                    <button class="edit-btn">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button class="delete-btn">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>

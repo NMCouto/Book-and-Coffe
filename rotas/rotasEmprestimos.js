@@ -1,7 +1,6 @@
 import emprestimo from "../modelos/emprestimo.js";
 
 export default function registrarRotasEmprestimos(app){
-    // Criar cliente
     app.post("/emprestimos", async (req, res) => {
         try {
             const novoEmprestimo = await emprestimo.create(req.body);
@@ -11,17 +10,15 @@ export default function registrarRotasEmprestimos(app){
         }
     });
 
-    // Listar clientes
     app.get("/emprestimos", async (req, res) => {
         try {
-            const emprestimo = await emprestimo.find();
-            res.json(emprestimo);
+            const lista = await emprestimo.find();
+            res.json(lista);
         } catch (error) {
             res.send(error);
         }
     });
 
-    // Atualizar cliente
     app.put("/emprestimos/:id", async (req, res) => {
         try {
             const atualizado = await emprestimo.findByIdAndUpdate(
@@ -35,7 +32,6 @@ export default function registrarRotasEmprestimos(app){
         }
     });
 
-    // Excluir cliente
     app.delete("/emprestimos/:id", async (req, res) => {
         try {
             const excluido = await emprestimo.findByIdAndDelete(req.params.id);
@@ -44,4 +40,23 @@ export default function registrarRotasEmprestimos(app){
             res.send(error);
         }
     });
+
+     app.get("/emprestimos/devolucaoHoje", async (req, res) => {
+        try {
+            const inicio = new Date();
+            inicio.setHours(0, 0, 0, 0);
+
+            const fim = new Date();
+            fim.setHours(23, 59, 59, 999);
+
+            const emprestimosHoje = await emprestimo.find({
+                data_devolucao: { $gte: inicio, $lte: fim }
+            });
+
+            res.json(emprestimosHoje);
+        } catch (error) {
+            res.send(error);
+        }
+    });
+
 }
