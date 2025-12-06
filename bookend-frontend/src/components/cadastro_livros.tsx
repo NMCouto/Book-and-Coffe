@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import '../styles/cadastro.css';
+import '../styles/cadastroModal.css';
 
 interface ModalProps {
   isOpen: boolean;

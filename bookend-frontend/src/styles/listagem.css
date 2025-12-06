@@ -1,0 +1,221 @@
+.page-container {
+  padding: 20px;
+  background-color: #F5F5F5;
+  /* Isso garante que o cinza vá até o final, mesmo com pouco conteúdo */
+  min-height: calc(100vh - 70px); /* 100% da tela menos a altura do Header */
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- ABAS DE NAVEGAÇÃO (Tabs) --- */
+.tabs-container {
+  display: flex;
+  width: 100%;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  overflow: hidden; /* Para arredondar as pontas */
+  border: 1px solid #ccc; /* Borda cinza em volta das abas */
+  background-color: #E0E0E0;
+}
+
+.tab-button {
+  flex: 1; /* Faz as duas abas terem o mesmo tamanho (50%) */
+  padding: 12px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #555;
+  transition: all 0.2s;
+  background-color: #E0E0E0;
+  border: none;
+  cursor: pointer;
+}
+
+.tab-button:hover {
+  background-color: #d5d5d5;
+}
+
+/* Estado Ativo (Azul Escuro) */
+.tab-button.active {
+  background-color: #1565C0; /* Azul similar ao da referência escura */
+  color: white;
+}
+
+/* --- AÇÕES DA TABELA (Ícones) --- */
+.action-cell {
+  display: flex;
+  gap: 12px;
+  justify-content: center; /* Centraliza os ícones */
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.icon-btn.edit {
+  color: #333; /* Lápis Escuro */
+}
+
+.icon-btn.delete {
+  color: #D32F2F; /* Lixeira Vermelha */
+}
+
+.icon-btn:hover {
+  background-color: rgba(0,0,0,0.1);
+}
+
+/* --- MANTENDO O RESTO (Barra de Ação, Tabela, etc) --- */
+.action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-wrapper {
+  position: relative;
+  width: 100%; /* Agora ocupa espaço para ficar bonito embaixo das abas */
+  max-width: 400px;
+}
+
+/* --- BARRA DE AÇÕES (Busca + Botão) --- */
+/* --- ATUALIZAÇÃO DA BARRA DE AÇÕES --- */
+.action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 20px; /* Espaço entre o grupo da esquerda e o botão da direita */
+}
+
+/* Grupo que segura a Pesquisa + Botão Filtrar */
+.search-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Espaço entre a barra e o botão filtrar */
+  flex: 1; /* Ocupa espaço disponível */
+  max-width: 600px; /* Limita para não esticar demais */
+}
+
+.search-wrapper {
+  position: relative;
+  width: 100%; 
+  /* Removemos o max-width fixo daqui para ele ser flexível dentro do grupo */
+}
+
+/* --- NOVO BOTÃO FILTRAR (Azul igual o Novo Cliente) --- */
+.btn-filter {
+  background-color: #2998DF; /* Mesmo azul do sistema */
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 20px; /* Bordas arredondadas igual ao input */
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.2s;
+  white-space: nowrap; /* Impede que o texto quebre linha */
+}
+
+.btn-filter:hover {
+  opacity: 0.9;
+}
+
+.search-wrapper {
+  position: relative;
+  width: 300px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 40px 10px 15px; /* Espaço na direita p/ o ícone */
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  outline: none;
+  background-color: white;
+}
+
+.search-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  pointer-events: none;
+}
+
+/* --- TABELA --- */
+.table-container {
+  background: white;
+  border: 1px solid #ccc; /* A borda externa cinza da imagem */
+  border-radius: 4px; /* Leve arredondamento nos cantos externos */
+  overflow: hidden; /* Garante que nada saia das bordas */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th, 
+.data-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #E0E0E0; /* Linhas horizontais */
+  border-right: 1px solid #E0E0E0;  /* Linhas verticais */
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* Header da Tabela */
+.data-table th {
+  background-color: #F9F9F9; /* Cinza bem clarinho no topo */
+  font-weight: bold;
+  color: #000;
+}
+
+/* Remove a borda direita da última coluna */
+.data-table th:last-child, 
+.data-table td:last-child {
+  border-right: none;
+}
+
+/* Centralizar checkboxes e números */
+.text-center {
+  text-align: center !important;
+}
+
+/* --- PAGINAÇÃO (Rodapé) --- */
+.pagination-footer {
+  display: flex;
+  justify-content: flex-end; /* Alinha à direita */
+  padding: 10px;
+  background-color: #F9F9F9;
+  border-top: 1px solid #ccc;
+  gap: 5px;
+}
+
+.page-btn {
+  background: white;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  border-radius: 2px;
+  color: #333;
+}
+
+.page-btn:hover {
+  background-color: #E0E0E0;
+}
