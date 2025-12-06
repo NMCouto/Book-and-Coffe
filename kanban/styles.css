@@ -111,6 +111,40 @@ body {
   padding-right: 4px;
 }
 
+.kanban-card{
+  position: relative;
+}
+
+.card-details-popup {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 30;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.12);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  border-radius: 8px;
+  width: 260px;
+}
+
+.card-details-popup.hidden {
+  display: none;
+}
+
+.card-details-popup .details-content {
+  padding: 12px;
+  font-size: 14px;
+}
+
+.card-details-popup .close-popup {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
 .edit-btn {
     background: transparent;
     border: none;
@@ -207,12 +241,31 @@ body {
 .card-icons {
   display: flex;
   gap: 12px;
+
 }
 
 .card-icons i {
   color: 
 #9ca3af;
 }
+
+.details-btn {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    cursor: pointer;
+}
+
+.details-btn i {
+    background: transparent !important;
+    color: #6b7280; /* cinza suave, igual aos outros ícones */
+}
+
+
+
 
 .task-input-container {
   display: flex;
@@ -254,4 +307,60 @@ body {
 *::-webkit-scrollbar-thumb {
   background-color: #cbd5e1;
   border-radius: 20px;
+}
+
+.card-details-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.card-details-popup.hidden {
+    display: none;
+}
+
+.details-content {
+    background: #fff;
+    padding: 20px;
+    width: 350px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    font-family: sans-serif;
+}
+
+.close-popup {
+    margin-top: 10px;
+    padding: 6px 15px;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.edit-popup {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
+}
+
+.edit-content {
+  background: white;
+  padding: 20px;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 12px;
 }
