@@ -2,7 +2,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { X, Plus, SignOut } from 'phosphor-react';
 //import { AuthContext } from '../contexts/AuthContext';
-import '../styles/Sidebar.css';
+import '../../styles/Sidebar.css';
 
 interface SidebarProps {
   isOpen: boolean;

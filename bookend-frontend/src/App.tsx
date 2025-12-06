@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { List } from 'phosphor-react'; // Ícone do menu (Hambúrguer)
 
 // Componentes
-import { Sidebar } from './components/Sidebar';
+import { Sidebar } from './components/ui/Sidebar';
 
 // Páginas
 import { Login } from './pages/login'; 
