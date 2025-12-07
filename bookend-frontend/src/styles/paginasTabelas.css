@@ -102,7 +102,7 @@
   align-items: center;
   gap: 12px; /* Espaço entre a barra e o botão filtrar */
   flex: 1; /* Ocupa espaço disponível */
-  max-width: 600px; /* Limita para não esticar demais */
+  max-width: 100%; /* Limita para não esticar demais */
 }
 
 .search-wrapper {
@@ -218,4 +218,70 @@
 
 .page-btn:hover {
   background-color: #E0E0E0;
+}
+
+/* --- Botões de Status --- */
+.status-toggle-group {
+  display: flex;
+  background-color: #E0E0E0; /* Fundo cinza claro do grupo */
+  padding: 4px; /* Espaço para o botão azul não encostar na borda */
+  border-radius: 25px; /* Bem arredondado */
+  gap: 2px;
+  height: fit-content; /* Garante que não estique */
+}
+
+.status-toggle-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 20px; /* O botão interno também é redondo */
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #555; /* Texto cinza quando inativo */
+  transition: all 0.3s ease; /* Animação suave */
+}
+
+.status-toggle-btn:hover {
+  color: #333;
+}
+
+/* O ESTADO ATIVO (AZUL) */
+.status-toggle-btn.active {
+  background-color: #2998DF; /* Azul Bookend */
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Leve sombra para destacar */
+}
+
+/* Estilo do Botão de Paginação */
+.page-btn {
+  background: white;
+  border: 1px solid #ccc;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  border-radius: 4px; /* Levemente arredondado */
+  color: #555;
+  transition: all 0.2s;
+  min-width: 32px; /* Garante largura mínima para números */
+}
+
+.page-btn:hover:not(:disabled) {
+  background-color: #f0f0f0;
+}
+
+/* DESTAQUE DA PÁGINA ATUAL */
+.page-btn.active {
+  background-color: #2998DF; /* Azul do projeto */
+  color: white;
+  border-color: #2998DF;
+  font-weight: bold;
+}
+
+/* Botão Desabilitado (ex: voltar na página 1) */
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #fafafa;
 }

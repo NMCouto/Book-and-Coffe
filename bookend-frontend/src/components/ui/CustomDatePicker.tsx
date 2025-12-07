@@ -48,7 +48,9 @@ export function CustomDatePicker({ label, value, onChange, isOpen, onToggle }: D
   };
 
   const currentYear = new Date().getFullYear();
-  const yearsList = Array.from({length: 20}, (_, i) => currentYear - 10 + i);
+  // Cria um array de 0 a 99 e subtrai do ano atual
+  // Ex: [2025, 2024, 2023 ... 1925]
+  const yearsList = Array.from({length: 100}, (_, i) => currentYear - i);
 
   return (
     <div className="date-input-wrapper">

@@ -1,22 +1,25 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { X, ArrowLeft } from 'phosphor-react';
-import { parseBookDate } from '../utils/validator';
-import { Autocomplete } from './ui/AutoComplete';     // Importando componente novo
-import { CustomDatePicker } from './ui/CustomDatePicker'; // Importando componente novo
-import '../styles/components/filtroModal.css'; // CSS enxuto (só layout do modal e chips)
+import '../styles/components/filtroModal.css';
 
-// Mock Data (poderia vir de um arquivo separado constants.ts)
-const ALL_GENRES = ['Fantasia', 'Aventura', 'Terror', 'Romance', 'Sci-Fi', 'Acadêmico', 'História'];
-const ALL_AUTHORS = ['J.K. Rowling', 'J.R.R. Tolkien', 'Stephen King', 'George Orwell', 'Machado de Assis'];
-const ALL_PUBLISHERS = ['Rocco', 'HarperCollins', 'Companhia das Letras', 'Intrínseca'];
+// -- Componentes --
+import { parseBookDate } from '../utils/validator';
+import { Autocomplete } from './ui/AutoComplete';
+import { CustomDatePicker } from './ui/CustomDatePicker';
+
+// -- Tipos e constantes --
+import type { AdvancedFilterState } from '../types';
+import { ALL_GENRES, ALL_AUTHORS, ALL_PUBLISHERS } from '../constants';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   livrosTotais: any[];
+  onConfirm: (filters: AdvancedFilterState) => void;
+  currentFilters: AdvancedFilterState;
 }
 
-export function ModalFiltrarLivro({ isOpen, onClose, livrosTotais }: ModalProps) {
+export function ModalFiltrarLivro({ isOpen, onClose, livrosTotais, onConfirm, currentFilters }: ModalProps) {
   if (!isOpen) return null;
 
   // Estados
@@ -26,6 +29,17 @@ export function ModalFiltrarLivro({ isOpen, onClose, livrosTotais }: ModalProps)
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [openDateInfo, setOpenDateInfo] = useState<'start' | 'end' | null>(null);
+
+  // Lógica de memória para os filtros
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedGenres(currentFilters.genres);
+      setSelectedAutores(currentFilters.authors);
+      setSelectedEditoras(currentFilters.publishers);
+      setStartDate(currentFilters.startDate);
+      setEndDate(currentFilters.endDate);
+    }
+  }, [isOpen, currentFilters]);
 
   // Lógica simples de Gênero (Chips)
   const toggleGenre = (genre: string) => {
@@ -51,6 +65,18 @@ export function ModalFiltrarLivro({ isOpen, onClose, livrosTotais }: ModalProps)
       return matchGenre && matchAutor && matchEditora && matchData;
     }).length;
   }, [selectedGenres, selectedAutores, selectedEditoras, startDate, endDate, livrosTotais]);
+
+  const handleConfirm = () => {
+    onConfirm({
+      genres: selectedGenres,
+      authors: selectedAutores,
+      publishers: selectedEditoras,
+      startDate: startDate,
+      endDate: endDate
+    });
+    
+    onClose(); // Fecha o modal
+  };
 
   return (
     <div className="modal-overlay">
@@ -119,8 +145,8 @@ export function ModalFiltrarLivro({ isOpen, onClose, livrosTotais }: ModalProps)
 
         <div className="modal-footer" style={{marginTop: '40px'}}>
            <button className="btn-outline" onClick={onClose} style={{borderRadius: '20px', padding: '10px 30px'}}>Voltar</button>
-           <button className="btn-solid" onClick={onClose} style={{borderRadius: '20px', padding: '10px 30px'}}>
-             Continuar ({filteredCount})
+           <button className="btn-solid" onClick={handleConfirm} style={{borderRadius: '20px', padding: '10px 30px'}}>
+             Confirmar ({filteredCount})
            </button>
         </div>
       </div>
