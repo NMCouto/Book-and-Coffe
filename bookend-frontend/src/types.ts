@@ -96,3 +96,11 @@ export interface AdvancedFilterState {
   startDate: Date | null;
   endDate: Date | null;
 }
+
+// T = Tipo do dado (Ex: ClienteView ou LivroView)
+export interface ColumnDef<T> {
+  header: string;           // O título da coluna (Ex: "Nome")
+  accessor?: keyof T;       // A chave do dado (Ex: "nome") - opcional se usar render
+  render?: (item: T) => React.ReactNode; // Função para desenhar algo customizado (botões, checkbox)
+  className?: string;       // Classes extras (Ex: "text-center")
+}
