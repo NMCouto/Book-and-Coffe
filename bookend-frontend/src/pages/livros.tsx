@@ -1,62 +1,99 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, MagnifyingGlass, PencilSimple, Trash, Faders } from 'phosphor-react';
+import { PencilSimple, Trash, Faders } from 'phosphor-react';
 import '../styles/paginasTabelas.css'; 
-import type { AdvancedFilterState, LivroView } from '../types';
+
+// --- Componentes Genéricos ---
+import { Pagination } from '../components/ui/Paginacao';
+import { GenericTable } from '../components/ui/GenericTable';
+import { GenericToolbar } from '../components/ui/GenericToolbar';
+
+// Tipos e Utilitários
+import type { AdvancedFilterState, LivroView, ColumnDef } from '../types';
+import { parseBookDate } from '../utils/validator';
+
+// --- Específicos ---
+import { LivrosService } from '../services/livrosService';
 import { CadastroLivro } from '../components/cadastro_livros';
 import { ModalFiltrarLivro } from '../components/filtrarLivro';
-import { parseBookDate } from '../utils/validator';
-import { Pagination } from '../components/ui/Paginacao';
-import { adaptLivro } from '../utils/adapters';
-
-import { LIVROS_MOCK } from '../mocks/livrosMocks';
 
 const ITEMS_PER_PAGE = 11;
 
 export function Livros() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [livrosData, setLivrosData] = useState<LivroView[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState<'todos' | 'disponiveis' | 'indisponiveis'>('todos');
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [filterStatus, setFilterStatus] = useState<'todos' | 'disponiveis' | 'indisponiveis'>('todos');
+  
   const [activeFilters, setActiveFilters] = useState<AdvancedFilterState>({
-    genres: [],
-    authors: [],
-    publishers: [],
-    startDate: null,
-    endDate: null
+    genres: [], authors: [], publishers: [], startDate: null, endDate: null
   });
 
-  const livrosData: LivroView[] = LIVROS_MOCK.map(adaptLivro);
+  // --- SERVIÇOS (Busca e Delete) ---
+  async function loadLivros() {
+    try {
+      setIsLoading(true);
+      const dados = await LivrosService.getAll();
+      setLivrosData(dados);
+    } catch (error) {
+      alert("Erro ao carregar livros.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
- const livrosFiltrados = livrosData.filter((livro) => {
-    
-    // Filtro de Busca (Input de Texto)
+  async function handleDelete(id: string) {
+    if (confirm("Tem certeza que deseja excluir este livro?")) {
+       await LivrosService.delete(id);
+       loadLivros(); 
+    }
+  }
+
+  useEffect(() => { loadLivros(); }, []);
+
+  // --- DEFINIÇÃO DAS COLUNAS (Especialização da GenericTable) ---
+  const columns = useMemo<ColumnDef<LivroView>[]>(() => [
+    { header: 'Título', accessor: 'titulo' },
+    { header: 'ISBN', accessor: 'isbn', className: 'text-center' },
+    { header: 'Gênero', accessor: 'genero', className: 'text-center' },
+    { 
+      header: 'Ações', 
+      className: 'text-center',
+      render: (livro) => (
+        <div className="action-cell">
+           <button className="icon-btn edit" title="Editar"><PencilSimple size={20} /></button>
+           <button className="icon-btn delete" onClick={() => handleDelete(livro.id)} title="Excluir">
+             <Trash size={20} />
+           </button>
+        </div>
+      )
+    }
+  ], []);
+
+  // --- LÓGICA DE FILTRAGEM ---
+  const livrosFiltrados = livrosData.filter((livro) => {
+    // A) Busca Texto
     const searchLower = searchTerm.toLowerCase();
-    const matchSearch = 
-      livro.titulo.toLowerCase().includes(searchLower) || 
-      livro.isbn.includes(searchTerm);
+    const matchSearch = livro.titulo.toLowerCase().includes(searchLower) || livro.isbn.includes(searchTerm);
 
-    // Filtro de Status (Abas)
+    // B) Status
     let matchStatus = true;
     if (filterStatus === 'disponiveis') matchStatus = livro.disponivel === true;
     if (filterStatus === 'indisponiveis') matchStatus = livro.disponivel === false;
 
-    // Filtros Avançados (Vindos do Modal)
-    // -- Gênero
+    // C) Filtros Avançados
     const generoLivro = livro.genero || 'NA';
-    const matchGenre = activeFilters.genres.length === 0 || activeFilters.genres.includes(generoLivro);
-
-    // -- Autor
     const autorLivro = livro.autor || 'NA';
-    const matchAutor = activeFilters.authors.length === 0 || activeFilters.authors.includes(autorLivro);
-
-    // -- Editora
     const editoraLivro = livro.editora || 'NA';
+
+    const matchGenre = activeFilters.genres.length === 0 || activeFilters.genres.includes(generoLivro);
+    const matchAutor = activeFilters.authors.length === 0 || activeFilters.authors.includes(autorLivro);
     const matchEditora = activeFilters.publishers.length === 0 || activeFilters.publishers.includes(editoraLivro);
 
-    // -- Data
+    // D) Datas
     let matchData = true;
     if (activeFilters.startDate || activeFilters.endDate) {
       const bookDate = parseBookDate(livro.data);
@@ -68,42 +105,29 @@ export function Livros() {
       }
     }
 
-    // O livro precisa passar em TODAS as provas para aparecer
     return matchSearch && matchStatus && matchGenre && matchAutor && matchEditora && matchData;
   });
 
-  // LÓGICA DE FATIAMENTO (Slice)
-  // Aplicamos a paginação SOBRE a lista já filtrada
-  const totalItems = livrosFiltrados.length;
-  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-  
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  
-  const livrosAtuais = livrosFiltrados.slice(startIndex, endIndex);
+  // --- PAGINAÇÃO E CONTROLES ---
+  const totalPages = Math.ceil(livrosFiltrados.length / ITEMS_PER_PAGE);
+  const currentData = livrosFiltrados.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE, 
+    currentPage * ITEMS_PER_PAGE
+  );
 
-  // COMANDOS DE TECLADO (Setas)
+  useEffect(() => { setCurrentPage(1); }, [searchTerm, filterStatus, activeFilters]);
+
+  // Teclado
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignora se o usuário estiver digitando num input
       if ((e.target as HTMLElement).tagName === 'INPUT') return;
-
-      if (e.key === 'ArrowLeft') {
-        setCurrentPage(prev => Math.max(prev - 1, 1));
-      } 
-      else if (e.key === 'ArrowRight') {
-        setCurrentPage(prev => Math.min(prev + 1, totalPages));
-      }
+      if (e.key === 'ArrowLeft') setCurrentPage(p => Math.max(p - 1, 1));
+      if (e.key === 'ArrowRight') setCurrentPage(p => Math.min(p + 1, totalPages));
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [totalPages]); // Recria o listener se o número total de páginas mudar
+  }, [totalPages]);
 
-  // Resetar para página 1 se o usuário filtrar algo
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, filterStatus, activeFilters]);
 
   return (
     <div className="page-container">
@@ -113,94 +137,38 @@ export function Livros() {
         <Link to="/livros" className="tab-button active">Livros</Link>
       </div>
 
-      <div className="action-bar">
-        {/* Grupo Pesquisa + Filtros */}
-        <div className="search-filter-group">
-          <div className="search-wrapper">
-            <input 
-              type="text" 
-              placeholder="Procurar livros (Título ou ISBN)" 
-              className="search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <MagnifyingGlass size={18} className="search-icon" />
-          </div>
-
-          <button className="btn-filter" onClick={() => setIsFilterOpen(true)}>
+      {/* TOOLBAR GENÉRICA + INJEÇÃO DE FILTROS ESPECÍFICOS */}
+      <GenericToolbar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        onNewItem={() => setIsModalOpen(true)}
+        newItemLabel="Novo Livro"
+      >
+         {/* Botão de Filtro Avançado */}
+         <button className="btn-filter" onClick={() => setIsFilterOpen(true)}>
              <Faders size={18} weight="bold" />
              Filtrar
-           </button>
-
-           <div className="status-toggle-group">
-            <button 
-              className={`status-toggle-btn ${filterStatus === 'todos' ? 'active' : ''}`}
-              onClick={() => setFilterStatus('todos')}
-            >
-              Todos
-            </button>
-            <button 
-              className={`status-toggle-btn ${filterStatus === 'disponiveis' ? 'active' : ''}`}
-              onClick={() => setFilterStatus('disponiveis')}
-            >
-              Disponíveis
-            </button>
-            <button 
-              className={`status-toggle-btn ${filterStatus === 'indisponiveis' ? 'active' : ''}`}
-              onClick={() => setFilterStatus('indisponiveis')}
-            >
-              Indisponíveis
-            </button>
-          </div>
-        </div>
-        
-        <button className="btn-solid" onClick={() => setIsModalOpen(true)}>
-            Novo Livro <Plus size={16} />
          </button>
-      </div>
+
+         {/* Botões de Status */}
+         <div className="status-toggle-group">
+            <button className={`status-toggle-btn ${filterStatus === 'todos' ? 'active' : ''}`} onClick={() => setFilterStatus('todos')}>Todos</button>
+            <button className={`status-toggle-btn ${filterStatus === 'disponiveis' ? 'active' : ''}`} onClick={() => setFilterStatus('disponiveis')}>Disponíveis</button>
+            <button className={`status-toggle-btn ${filterStatus === 'indisponiveis' ? 'active' : ''}`} onClick={() => setFilterStatus('indisponiveis')}>Indisponíveis</button>
+         </div>
+      </GenericToolbar>
 
       <div className="table-container">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Título</th>
-              <th className="text-center">ISBN</th>
-              <th className="text-center">Gênero</th>
-              <th className="text-center">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-             {livrosAtuais.map(livro => (
-               <tr key={livro.id}>
-                 <td>{livro.titulo}</td>
-                 <td className="text-center">{livro.isbn}</td>
-                 <td className="text-center">{livro.genero}</td>
-                 <td className="text-center">
-                    <div className="action-cell">
-                      <button className="icon-btn edit"><PencilSimple size={20} /></button>
-                      <button className="icon-btn delete"><Trash size={20} /></button>
-                    </div>
-                 </td>
-               </tr>
-             ))}
+        {/* TABELA GENÉRICA */}
+        <GenericTable 
+          data={currentData}
+          columns={columns}
+          isLoading={isLoading}
+          itemsPerPage={ITEMS_PER_PAGE}
+          emptyMessage="Nenhum livro encontrado."
+        />
 
-             {/* Preenchimento visual se a página não estiver cheia (opcional) */}
-              {Array.from({ length: ITEMS_PER_PAGE - livrosAtuais.length }).map((_, idx) => (
-                <tr key={`empty-${idx}`}>
-                  <td colSpan={4}>&nbsp;</td>
-                </tr>
-              ))}
-             
-             {livrosFiltrados.length === 0 && (
-               <tr>
-                 <td colSpan={4} style={{textAlign: 'center', padding: 20, color: '#666'}}>
-                   Nenhum livro encontrado.
-                 </td>
-               </tr>
-            )}
-          </tbody>
-        </table>
-
+        {/* PAGINAÇÃO */}
         <Pagination 
           currentPage={currentPage}
           totalPages={totalPages}
@@ -208,16 +176,17 @@ export function Livros() {
         />
      </div>
 
+      {/* MODAIS */}
       <CadastroLivro 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={() => { setIsModalOpen(false); loadLivros(); }} 
       />
 
       <ModalFiltrarLivro 
         isOpen={isFilterOpen} 
         onClose={() => setIsFilterOpen(false)} 
-        livrosTotais={livrosData} 
-        onConfirm={(filters) => setActiveFilters(filters)}
+        livrosTotais={livrosData} // Passa dados brutos para contagem preview
+        onConfirm={setActiveFilters}
         currentFilters={activeFilters} 
       />
         

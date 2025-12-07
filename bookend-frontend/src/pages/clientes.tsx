@@ -1,13 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, MagnifyingGlass, PencilSimple, Trash } from 'phosphor-react';
+import { PencilSimple, Trash } from 'phosphor-react';
 import '../styles/paginasTabelas.css';
-import { CadastroCliente } from '../components/cadastro_cliente';
-import { Pagination } from '../components/ui/Paginacao';
-import { adaptCliente } from '../utils/adapters';
-import { CLIENTES_MOCK } from '../mocks/clientesMocks'
-import type { ClienteView } from '../types';
 
+// --- Componentes Genéricos ---
+import { GenericToolbar } from '../components/ui/GenericToolbar';
+import { GenericTable } from '../components/ui/GenericTable';
+import { Pagination } from '../components/ui/Paginacao'; 
+
+// --- Específicos ---
+import { CadastroCliente } from '../components/cadastro_cliente';
+import { ClientesService } from '../services/clientesService';
+import type { ClienteView, ColumnDef } from '../types';
 
 const ITEMS_PER_PAGE = 11;
 
@@ -16,8 +20,54 @@ export function Clientes() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'todos' | 'ativos' | 'N ativos'>('todos');
   const [currentPage, setCurrentPage] = useState(1);
+  const [clientesData, setClientesData] = useState<ClienteView[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const clientesData: ClienteView[] = CLIENTES_MOCK.map(adaptCliente);
+  // Função para Carregar Dados (Backend ou Mock)
+  async function loadClientes() {
+    try {
+      setIsLoading(true);
+      const dados = await ClientesService.getAll(); // O Serviço já traz adaptado!
+      setClientesData(dados);
+    } catch (error) {
+      console.error("Erro ao carregar clientes", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  // Carrega ao abrir a tela
+  useEffect(() => {
+    loadClientes();
+  }, []);
+
+  // Função de Deletar
+  async function handleDelete(id: string) {
+    if (confirm("Tem certeza que deseja excluir este cliente?")) {
+      await ClientesService.delete(id);
+      loadClientes(); // Recarrega a lista para atualizar a tabela
+    }
+  }
+
+  // --- CONFIGURAÇÃO DAS COLUNAS (A parte que especializa a tabela) ---
+  const columns = useMemo<ColumnDef<ClienteView>[]>(() => [
+    { header: 'Nome do cliente', accessor: 'nome' },
+    { header: 'CPF', accessor: 'cpf', className: 'text-center' },
+    { header: 'Telefone', accessor: 'telefone', className: 'text-center' },
+    { header: 'Num. Empréstimos', accessor: 'emprestimosAtivos', className: 'text-center' },
+    {
+      header: 'Ações',
+      className: 'text-center',
+      render: (cliente) => (
+        <div className="action-cell">
+           <button className="icon-btn edit"><PencilSimple size={20} /></button>
+           <button className="icon-btn delete" onClick={() => handleDelete(cliente.id)}>
+             <Trash size={20} />
+           </button>
+        </div>
+      )
+    }
+  ], []); // Array vazio no final garante que a config não seja recriada à toa
 
   // Lógica de Filtragem (Nome OU CPF)
   const clientesFiltrados = clientesData.filter((cliente) => {
@@ -73,111 +123,43 @@ export function Clientes() {
 
   return (
     <div className="page-container">
-      
       <div className="tabs-container">
         <Link to="/clientes" className="tab-button active">Clientes</Link>
         <Link to="/livros" className="tab-button">Livros</Link>
       </div>
 
-      <div className="action-bar">
-        {/* Grupo Pesquisa + Filtro */}
-        <div className="search-filter-group">
-          <div className="search-wrapper">
-            <input 
-              type="text" 
-              placeholder="Procurar um cliente (Nome ou CPF)" 
-              className="search-input"
-              value={searchTerm} // Conecta ao estado
-              onChange={(e) => setSearchTerm(e.target.value)} // Atualiza o estado
-            />
-            <MagnifyingGlass size={18} className="search-icon" />
-          </div>
-
-           <div className="status-toggle-group">
-            <button 
-              className={`status-toggle-btn ${filterStatus === 'todos' ? 'active' : ''}`}
-              onClick={() => setFilterStatus('todos')}
-            >
-              Todos
-            </button>
-            <button 
-              className={`status-toggle-btn ${filterStatus === 'ativos' ? 'active' : ''}`}
-              onClick={() => setFilterStatus('ativos')}
-            >
-              Com Empréstimos Ativos
-            </button>
-            <button 
-              className={`status-toggle-btn ${filterStatus === 'N ativos' ? 'active' : ''}`}
-              onClick={() => setFilterStatus('N ativos')}
-            >
-              Sem Empréstimos Ativos
-            </button>
-          </div>
-        </div>
-        
-        <button className="btn-solid" onClick={() => setIsModalOpen(true)} style={{display: 'flex', gap: 8, alignItems: 'center'}}>
-          Novo Cliente <Plus size={16} weight="bold" />
-        </button>
-        
-        <button className="btn-solid" onClick={() => setIsModalOpen(true)} style={{display: 'flex', gap: 8, alignItems: 'center'}}>
-          Novo Cliente <Plus size={16} weight="bold" />
-        </button>
-      </div>
+      {/* Toolbar Genérica + Filtros Específicos */}
+      <GenericToolbar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        onNewItem={() => setIsModalOpen(true)}
+        newItemLabel="Novo Cliente"
+      >
+         {/* INJEÇÃO DE CONTEÚDO ESPECÍFICO DE CLIENTES */}
+         <div className="status-toggle-group">
+            <button className={`status-toggle-btn ${filterStatus === 'todos' ? 'active' : ''}`} onClick={() => setFilterStatus('todos')}>Todos</button>
+            <button className={`status-toggle-btn ${filterStatus === 'ativos' ? 'active' : ''}`} onClick={() => setFilterStatus('ativos')}>Com Empréstimos</button>
+            <button className={`status-toggle-btn ${filterStatus === 'N ativos' ? 'active' : ''}`} onClick={() => setFilterStatus('N ativos')}>Sem Empréstimos</button>
+         </div>
+      </GenericToolbar>
 
       <div className="table-container">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Nome do cliente</th>
-              <th className="text-center">CPF</th>
-              <th className="text-center">Telefone</th>
-              <th className="text-center">Num. Empréstimos</th>
-              <th className="text-center">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* 4. Map atualizado para 'currentClientes' */}
-            {clientesAtuais.map((cliente) => (
-              <tr key={cliente.id}>
-                <td>{cliente.nome}</td>
-                <td className="text-center">{cliente.cpf}</td>
-                <td className="text-center">{cliente.telefone}</td>
-                <td className="text-center">{cliente.emprestimosAtivos}</td>
-                <td className="text-center">
-                  <div className="action-cell">
-                    <button className="icon-btn edit"><PencilSimple size={20} /></button>
-                    <button className="icon-btn delete"><Trash size={20} /></button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            
-            {/* Linhas vazias para manter altura fixa (opcional, mas recomendado) */}
-            {Array.from({ length: ITEMS_PER_PAGE - clientesAtuais.length }).map((_, idx) => (
-                <tr key={`empty-${idx}`}>
-                  <td colSpan={5}>&nbsp;</td>
-                </tr>
-            ))}
+        {/* Tabela Genérica configurada com as colunas de Cliente */}
+        <GenericTable 
+          data={clientesAtuais}
+          columns={columns}
+          isLoading={isLoading}
+          itemsPerPage={ITEMS_PER_PAGE}
+        />
 
-            {clientesAtuais.length === 0 && totalItems === 0 && (
-               <tr>
-                 <td colSpan={5} style={{textAlign: 'center', padding: 20, color: '#666'}}>
-                   Nenhum cliente encontrado.
-                 </td>
-               </tr>
-            )}
-          </tbody>
-        </table>
-
-        {/* 5. Componente de Paginação */}
         <Pagination 
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
         />
       </div>
 
-      <CadastroCliente isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <CadastroCliente isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); loadClientes(); }} />
     </div>
   );
 }
