@@ -7,7 +7,7 @@ function App() {
   const [buscaCliente, setBuscaCliente] = useState('')
   const [buscaLivro, setBuscaLivro] = useState('')
 
-  // Dados fake (você pode mudar depois)
+  // Dados fake
   const clientes = [
     { data: '01/01/2025', nome: 'cliente 1', cpf: '123.456.789-00' },
     { data: '15/02/2025', nome: 'Maria Silva', cpf: '987.654.321-00' },
