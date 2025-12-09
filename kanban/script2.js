@@ -1,5 +1,5 @@
 // -------------------------
-// script.js (com edição via popup)
+// script.js (com edição via popup + prioridade editável)
 // -------------------------
 
 const API_BASE = "http://localhost:3000/cards";
@@ -12,6 +12,13 @@ function mapPriorityValue(v) {
   if (v === "2" || v === 2) return "medium";
   if (v === "3" || v === 3) return "high";
   return v;
+}
+
+function mapPriorityLabel(cl) {
+  if (cl === "low") return "baixa";
+  if (cl === "medium") return "média";
+  if (cl === "high") return "alta";
+  return "";
 }
 
 /* -------------------------
@@ -107,18 +114,14 @@ function criarCardHTML(card) {
   div.className = "kanban-card";
   div.draggable = true;
   div.dataset.id = card._id;
-  let prioridade = "";
-  if(card.priority === "low"){
-    prioridade = "baixa";
-  }else if(card.priority === "medium"){
-    prioridade ="média";
-  }else if(card.priority === "high"){
-    prioridade = "alta";
-  }
 
   div.innerHTML = `
       <div class="badge ${card.priority}">
-        <span>${prioridade}</span>
+        <select class="priority-select">
+            <option value="low" ${card.priority === "low" ? "selected" : ""}>Baixa</option>
+            <option value="medium" ${card.priority === "medium" ? "selected" : ""}>Média</option>
+            <option value="high" ${card.priority === "high" ? "selected" : ""}>Alta</option>
+        </select>
       </div>
 
       <p class="card-title">${escapeHtml(card.title)}</p>
@@ -143,11 +146,35 @@ function criarCardHTML(card) {
       </div>
   `;
 
+  /* Drag */
   div.addEventListener("dragstart", () => div.classList.add("dragging"));
   div.addEventListener("dragend", () => div.classList.remove("dragging"));
 
   coluna.appendChild(div);
 }
+
+/* -------------------------
+   ALTERAR PRIORIDADE (NOVO!)
+------------------------- */
+document.addEventListener("change", async (e) => {
+  if (!e.target.classList.contains("priority-select")) return;
+
+  const select = e.target;
+  const card = select.closest(".kanban-card");
+  const id = card.dataset.id;
+
+  const novaPrioridade = select.value;
+
+  try {
+    await atualizarCardNoBanco(id, { priority: novaPrioridade });
+
+    const badge = select.closest(".badge");
+    badge.className = "badge " + novaPrioridade;
+
+  } catch (err) {
+    console.error("Erro ao atualizar prioridade:", err);
+  }
+});
 
 /* -------------------------
    Criar novo card
@@ -188,7 +215,7 @@ document.addEventListener("click", async (e) => {
 });
 
 /* -------------------------
-   EDITAR TÍTULO + COMENTÁRIO (NOVO POPUP)
+   EDITAR TÍTULO + COMENTÁRIO
 ------------------------- */
 document.addEventListener("click", (e) => {
   const editBtn = e.target.closest(".edit-btn");
@@ -200,7 +227,6 @@ document.addEventListener("click", (e) => {
   const currentTitle = card.querySelector(".card-title").textContent;
   const currentComment = card.querySelector(".details-text").textContent;
 
-  // Criar popup
   const popup = document.createElement("div");
   popup.classList.add("edit-popup");
 

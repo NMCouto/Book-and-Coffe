@@ -1,6 +1,0 @@
-salvar cards localmente 
-adicionar opção de marcar entregue nos livros de devoluções 
-alterar modelo do empréstimo adicionando status: devolvido, pendente;
-adicionar todos os empréstimos além do hoje 
-alterar a criação dos cards para que já venham com o botão de editar e de apagar e com alterar prioridade 
-os cards podem ser armazenados no banco de dados online e serem carregados como os empréstimos, (criar modelo, rotas, e botão de salvar)

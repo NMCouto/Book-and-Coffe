@@ -219,6 +219,9 @@ body {
     outline: none;
 }
 
+option{
+  background-color: grey;
+}
 
 .badge.low    { 
     background-color: #3b82f6; 

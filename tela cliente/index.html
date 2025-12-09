@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Gerenciar Clientes</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1>Gerenciar Clientes</h1>
+
+<!-- FORM DE NOVO CLIENTE -->
+<div class="form-box">
+    <h3>Adicionar Cliente</h3>
+    <input id="cpf" placeholder="CPF" type="number"> <br>
+    <input id="nome" placeholder="Nome"> <br>
+    <input id="telefone" placeholder="Telefone"> <br>
+    <input id="nasc" placeholder="Data de Nascimento" type="date"> <br>
+    <input id="cep" placeholder="CEP" type="number"> <br>
+
+    <button class="addCliente" onclick="criarCliente()">Cadastrar</button>
+</div>
+
+<!-- TABELA -->
+<table>
+    <thead>
+        <tr>
+            <th>CPF</th>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Nascimento</th>
+            <th>CEP</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody id="tabela-clientes"></tbody>
+</table>
+
+<!-- POPUP DE EDIÇÃO -->
+<div class="overlay"></div>
+<div class="popup" id="popupEdit">
+    <h3>Editar Cliente</h3>
+
+    <input id="editNome">
+    <input id="editTelefone">
+    <input id="editNasc" type="date">
+    <input id="editCep" type="number">
+
+    <button class="btn-salvar" onclick="salvarEdicao()">Salvar</button>
+    <button class="btn-cancelar" onclick="fecharPopup()">Cancelar</button>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
