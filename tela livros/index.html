@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Gerenciar Livros</title>
+
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+<body>
+
+<h1>Gerenciar Livros</h1>
+
+<!-- FORM DE NOVO LIVRO -->
+<div class="form-box">
+    <h3>Adicionar Livro</h3>
+
+    <input id="isbn" placeholder="ISBN"> 
+    <input id="titulo" placeholder="Título">
+    <input id="genero" placeholder="Gênero">
+    <input id="autor" placeholder="Autor">
+    <input id="editora" placeholder="Editora">
+    <input id="volume" placeholder="Volume" type="number">
+    <input id="dataLanc" placeholder="Data de Lançamento" type="date">
+
+    <button class="addLivro" onclick="criarLivro()">Cadastrar</button>
+</div>
+
+<!-- FILTROS -->
+<div class="pesquisa-containers">
+
+    <div class="filtro-dropdown">
+        <button class="btn-filtro">
+            <i class="fa-solid fa-filter"></i>
+        </button>
+
+        <div class="filtro-opcoes">
+            <p onclick="ordenarLivros('titulo-asc')">Título (A → Z)</p>
+            <p onclick="ordenarLivros('titulo-desc')">Título (Z → A)</p>
+
+            <p onclick="ordenarLivros('autor-asc')">Autor (A → Z)</p>
+            <p onclick="ordenarLivros('autor-desc')">Autor (Z → A)</p>
+
+            <p onclick="ordenarLivros('genero-asc')">Gênero (A → Z)</p>
+            <p onclick="ordenarLivros('genero-desc')">Gênero (Z → A)</p>
+
+            <p onclick="ordenarLivros('data-recente')">Lançamento (Mais recente)</p>
+            <p onclick="ordenarLivros('data-antiga')">Lançamento (Mais antigo)</p>
+        </div>
+    </div>
+
+    <input id="pesquisaTitulo" class="input-pesquisa" placeholder="Pesquisar por título..." oninput="filtrarLivros()">
+    <input id="pesquisaISBN" class="input-pesquisa" placeholder="Pesquisar por ISBN..." oninput="filtrarLivros()">
+    <input id="pesquisaAutor" class="input-pesquisa" placeholder="Pesquisar por autor..." oninput="filtrarLivros()">
+    <input id="pesquisaEditora" class="input-pesquisa" placeholder="Pesquisar por editora..." oninput="filtrarLivros()">
+
+    <i class="fa-solid fa-magnifying-glass"></i>
+</div>
+
+<!-- TABELA -->
+<table>
+    <thead>
+        <tr>
+            <th>ISBN</th>
+            <th>Título</th>
+            <th>Gênero</th>
+            <th>Autor</th>
+            <th>Editora</th>
+            <th>Volume</th>
+            <th>Lançamento</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+
+    <tbody id="tabela-livros"></tbody>
+</table>
+
+
+<!-- POPUP -->
+<div class="overlay"></div>
+<div class="popup" id="popupEdit">
+    <h3>Editar Livro</h3>
+
+    <input id="editTitulo">
+    <input id="editGenero">
+    <input id="editAutor">
+    <input id="editEditora">
+    <input id="editVolume" type="number">
+    <input id="editData" type="date">
+
+    <button class="btn-salvar" onclick="salvarEdicao()">Salvar</button>
+    <button class="btn-cancelar" onclick="fecharPopup()">Cancelar</button>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<script src="script.js"></script>
+
+
+</body>
+</html>

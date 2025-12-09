@@ -24,6 +24,19 @@
 </div>
 
 <div class="pesquisa-containers">
+    <div class="filtro-dropdown">
+        <button class="btn-filtro">
+            <i class="fa-solid fa-filter"></i>
+        </button>
+
+        <div class="filtro-opcoes">
+            <p onclick="ordenarClientes('nome-asc')">Nome (A → Z)</p>
+            <p onclick="ordenarClientes('nome-desc')">Nome (Z → A)</p>
+            <p onclick="ordenarClientes('nasc-recente')">Nascimento (Mais novo primeiro)</p>
+            <p onclick="ordenarClientes('nasc-antiga')">Nascimento (Mais antigo primeiro)</p>
+        </div>
+    </div>
+    
     <input 
         type="text" 
         id="pesquisaNome" 
@@ -31,6 +44,15 @@
         oninput="filtrarTabela()"
         class="input-pesquisa"
     />
+
+    <input 
+        type="text" 
+        id="pesquisaCPF" 
+        placeholder="Pesquisar por CPF..."
+        oninput="filtrarClientes()"
+        class="input-pesquisa"
+    />
+
     <i class="fa-solid fa-magnifying-glass"></i>
 </div>
 
@@ -66,6 +88,9 @@
     <button class="btn-salvar" onclick="salvarEdicao()">Salvar</button>
     <button class="btn-cancelar" onclick="fecharPopup()">Cancelar</button>
 </div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
 
 <script src="script.js"></script>
 
