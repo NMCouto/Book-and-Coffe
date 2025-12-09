@@ -170,3 +170,16 @@ input[type="date"] {
     text-transform: uppercase; /* deixa MAIÚSCULO */
     font-weight: 600;        /* deixa mais forte (opcional) */
 }
+
+.input-pesquisa {
+    width: 300px;
+    padding: 8px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.input-pesquisa::placeholder {
+    color: #9ca3af;
+}

@@ -123,3 +123,18 @@ function fecharPopup() {
 }
 
 carregarClientes();
+
+function filtrarTabela() {
+    const filtro = document.getElementById("pesquisaNome").value.toLowerCase();
+    const linhas = document.querySelectorAll("#tabela-clientes tr");
+
+    linhas.forEach(linha => {
+        const nome = linha.querySelector("td:nth-child(2)")?.textContent.toLowerCase();
+
+        if (nome && nome.includes(filtro)) {
+            linha.style.display = "";
+        } else {
+            linha.style.display = "none";
+        }
+    });
+}
