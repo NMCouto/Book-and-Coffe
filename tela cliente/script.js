@@ -154,7 +154,7 @@ async function salvarEdicao() {
     const cep = document.getElementById("editCep").value.trim();
 
     if (!nome || !telefone || !nasc || !cep) {
-        alert("Preencha todos os campos antes de salvar.");
+        mostrarToast("Preencha todos os Campos", "erro");
         return;
     }
 
@@ -165,11 +165,23 @@ async function salvarEdicao() {
         CEP: cep,
     };
 
-    await fetch(`${API}/${idEditando}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(atualizado)
-    });
+    try{
+        const resp = await fetch(`${API}/${idEditando}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(atualizado)
+        });
+
+        if(!resp.ok){
+            mostrarToast("Erro ao atualizar Cliente", "erro");
+            return;
+        }
+
+        mostrarToast("Cliente Atualizado", "sucesso");
+    }catch (e){
+        mostrarToast("erro de Conexão", "erro");
+    }
+
 
     fecharPopup();
     carregarClientes();
@@ -179,7 +191,16 @@ async function salvarEdicao() {
 async function deletarCliente(id) {
     if (!confirm("Deseja realmente excluir?")) return;
 
-    await fetch(`${API}/${id}`, { method: "DELETE" });
+    try{
+        const resp = await fetch(`${API}/${id}`, { method: "DELETE" });
+        if(!resp.ok){
+            mostrarToast("Não foi possível apagar o cliente", "erro");
+        }
+
+        mostrarToast("O cliente foi excluído", "sucesso");
+    }catch(e){
+        mostrarToast("Erro de Conexão", "erro");
+    }
     carregarClientes();
 }
 
@@ -234,21 +255,28 @@ function filtrarTabela() {
 function filtrarClientes() {
     const nomeFiltro = document.getElementById("pesquisaNome").value.toLowerCase();
     const cpfFiltro = document.getElementById("pesquisaCPF").value.toLowerCase();
+    const telFiltro = document.getElementById("pesquisaTelefone").value.toLowerCase();
+    const cepFiltro = document.getElementById("pesquisaCEP").value.toLowerCase();
 
     const linhas = document.querySelectorAll("#tabela-clientes tr");
 
     linhas.forEach(linha => {
         const cpf = linha.querySelector("td:nth-child(1)")?.textContent.toLowerCase() || "";
         const nome = linha.querySelector("td:nth-child(2)")?.textContent.toLowerCase() || "";
+        const telefone = linha.querySelector("td:nth-child(3)")?.textContent.toLowerCase() || "";
+        const cep = linha.querySelector("td:nth-child(5)")?.textContent.toLowerCase() || "";
 
         let mostrar = true;
 
         if (nomeFiltro !== "") mostrar = nome.includes(nomeFiltro);
         if (cpfFiltro !== "") mostrar = mostrar && cpf.includes(cpfFiltro);
+        if (telFiltro !== "") mostrar = mostrar && telefone.includes(telFiltro);
+        if (cepFiltro !== "") mostrar = mostrar && cep.includes(cepFiltro);
 
         linha.style.display = mostrar ? "" : "none";
     });
 }
+
 
 
 //Funções para que o filtro funcione 

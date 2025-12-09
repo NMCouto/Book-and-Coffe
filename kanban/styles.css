@@ -367,3 +367,55 @@ option{
   gap: 10px;
   border-radius: 12px;
 }
+
+#toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px; /* aparece no canto inferior direito */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 9999;
+}
+
+/* CAIXA DO TOAST */
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  min-width: 260px;
+
+  background: #ffffff;   /* FUNDO BRANCO */
+  color: #222;           /* TEXTO ESCURO */
+  font-size: 15px;
+  font-weight: 500;
+
+  border-left: 6px solid;   /* borda colorida */
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+
+  transform: translateX(120%);
+  opacity: 0;
+  transition: all 0.35s ease;
+}
+
+/* Animação de entrada */
+.toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Ícone ✔ ✖ */
+.toast .toast-icon {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.toast.sucesso {
+  border-color: #16a34a;     /* verde */
+}
+
+.toast.erro {
+  border-color: #dc2626;     /* vermelho */
+}

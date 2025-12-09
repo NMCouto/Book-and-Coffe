@@ -1,0 +1,15 @@
+A tela de empréstimos terá a mesma interface que a da tela de livros e de clientes, porém é necessário a adição de lógica para que quando
+um empréstimo seja gerado, haja o cruzamento de dados do cliente e do livro, pegando o cpf do cliente e também que o livro tenha o 
+status alterado para Em Uso, e que quando um livro estiver "Em Uso" não seja possível utilizar-lo para o empréstimo
+
+Além disso, é necessário a adição de lógica para a exibição das devoluções da semana e com a data e que caso esteja Atrasado o status do
+empréstimo mude para "Atrasado" 
+
+Para acabar o projeto: 
+-Tela Login (Com recuperar senha, registrar, talvez possa ficar armazenado em um email padrão do gerente, e permissão de acesso)
+-Tela de Análise com Lógica 
+-Abas de navegação
+
+Final:
+-Apresentação no Canva
+-Documentação de explicação de funcionamento do programa 

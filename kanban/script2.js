@@ -55,6 +55,54 @@ function enableDragDropForExisting() {
 }
 enableDragDropForExisting();
 
+//Função para o funcionamento do Toast 
+function mostrarToast(mensagem, tipo = "sucesso") {
+    // garante que exista o container (caso o HTML não o tenha ou esteja depois do script)
+    let container = document.getElementById("toast-container");
+    if (!container) {
+        container = document.createElement("div");
+        container.id = "toast-container";
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement("div");
+    toast.className = "toast " + (tipo === "erro" ? "erro" : "sucesso");
+
+    // opcional: ícone
+    const icon = document.createElement("span");
+    icon.className = "toast-icon";
+    icon.innerHTML = tipo === "erro" ? "&#10060;" : "&#10004;"; // ✖ ou ✔
+    icon.setAttribute("aria-hidden", "true");
+
+    const text = document.createElement("div");
+    text.className = "toast-text";
+    text.textContent = mensagem;
+
+    toast.appendChild(icon);
+    toast.appendChild(text);
+
+    container.appendChild(toast);
+
+    // Força reflow para ativar animação CSS
+    // eslint-disable-next-line no-unused-expressions
+    toast.offsetHeight;
+    toast.classList.add("show");
+
+    // remover após 4s (ou se o usuário clicar)
+    const remover = () => {
+        toast.classList.remove("show");
+        // aguarda transição para remover do DOM
+        setTimeout(() => toast.remove(), 350);
+    };
+
+    const timer = setTimeout(remover, 4000);
+
+    toast.addEventListener("click", () => {
+        clearTimeout(timer);
+        remover();
+    });
+}
+
 /* -------------------------
    API
 ------------------------- */
@@ -64,7 +112,12 @@ async function criarCardNoBanco(cardData) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(cardData),
   });
-  if (!resp.ok) throw new Error(`POST ${resp.status}`);
+  if (!resp.ok) {
+    //throw new Error(`POST ${resp.status}`)
+    mostrarToast("Não foi possível adicionar o Card ", "erro");
+  };
+
+  mostrarToast("Card Acionado","sucesso");
   return await resp.json();
 }
 
@@ -76,7 +129,13 @@ async function buscarCardsNoBanco() {
 
 async function deletarCardNoBanco(id) {
   const resp = await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
-  if (!resp.ok) throw new Error(`DELETE ${resp.status}`);
+  if (!resp.ok){
+    mostrarToast("Não foi possível Apagar o Card","erro");
+    throw new Error(`DELETE ${resp.status}`);
+  }
+
+  mostrarToast("Card Deletado","sucesso");
+    
   return await resp.json();
 }
 
@@ -86,7 +145,12 @@ async function atualizarCardNoBanco(id, body) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (!resp.ok) throw new Error(`PUT ${resp.status}`);
+  if (!resp.ok){
+    mostrarToast("Não foi possível atualizar o Card","erro");
+    throw new Error(`PUT ${resp.status}`);
+  }
+
+  mostrarToast("Card Atualizado","sucesso");
   return await resp.json();
 }
 
@@ -185,8 +249,10 @@ document.getElementById("addTaskBtn").addEventListener("click", async () => {
   const columnId = document.getElementById("taskColumn").value;
   const priority = mapPriorityValue(document.getElementById("priority").value);
 
-  if (!title) return alert("Digite o título.");
-
+  if (!title) {
+    mostrarToast("Preencha o Título","erro");
+    return;
+  }
   const payload = { title, comment, columnId, priority };
 
   try {

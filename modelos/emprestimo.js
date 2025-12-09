@@ -12,7 +12,8 @@ const emprestimoSchema = new mongoose.Schema({
             data.setDate(data.getDate() + 7); //caso a data nao seja definida o padrão é 1 semana 
             return data;
         }
-    }
+    },
+    status: { type: String, required: true, default: "Pendente"}
 });
 
 export default mongoose.model("emprestimo", emprestimoSchema);
