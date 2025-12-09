@@ -47,6 +47,8 @@ body {
   font-weight: 600;
 }
 
+
+
 /* ABAS SUPERIOR */
 .tabs {
   background: #d0d0d0;
@@ -71,12 +73,45 @@ body {
   margin: 0 auto;
 }
 
+.fotoGrafico{
+  margin-left: 40%;
+  margin-top: 10%;
+  width: 100px;
+  height: 100px;
+}
+
+
+.button-details{
+  background-color: #B9B6B6;
+  color: white;
+  width: 100px;
+  height: 50px;
+  position: fixed;
+  bottom: 10%;
+  border-radius: 12px;
+  left: 55%;
+  transform: translateX(-25%);
+
+}
+.button-details button {
+    background: none; /* Deixa o fundo transparente para usar o fundo do .button-details */
+    border: none;
+    color: black; /* O texto do botão deve ser branco */
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    font-weight: bold;
+    /* Centraliza o texto verticalmente dentro do <button> (opcional) */
+    line-height: 50px; 
+}
+
+
 .aba-buttons {
   display: flex;
   margin-bottom: 20px;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(185, 182, 182,100);
 }
 
 .aba-buttons button {
@@ -93,6 +128,32 @@ body {
 .aba-active {
   background: #0d47a1 !important;
 }
+
+.cards-container{
+  color: black;
+  display: flex;
+  gap: 30%;
+  margin-top: 5%; ;
+  width: 100%;
+  align-items: center;
+
+}
+
+.card-metric{
+  background-color: white;
+  border-radius: 12px;
+  text-align: center;
+  margin-top:10px;
+  height: 100px;
+  padding-top: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.card-number{
+  margin-top: 10px;
+  size: 3cm;
+}
+
 
 /* BARRA DE BUSCA */
 .search-bar {
@@ -167,3 +228,31 @@ body {
 
 .acao-btn.delete:hover { background: #ffcdd2; }
 .acao-btn.edit:hover { background: #fff9c4; }
+.app-container { min-height: 100vh; background: linear-gradient(135deg, #e0f7fa, #c8e6c9); }
+.main-layout { display: flex; }
+.sidebar {
+  width: 250px;
+  background: #fff;
+  padding: 30px 20px;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+.sidebar nav { display: flex; flex-direction: column; gap: 15px; }
+.sidebar a {
+  display: flex; align-items: center; gap: 15px;
+  padding: 15px;
+  border-radius: 12px;
+  color: #333;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.sidebar a:hover, .sidebar a.active {
+  background: #e3f2fd;
+  color: #1976d2;
+  font-weight: bold;
+}
+.content {
+  flex: 1;
+  padding: 30px;
+}
+.pagina { max-width: 1100px; margin: 0 auto; }
+.titulo-pagina { font-size: 2rem;  color: #333; text-align: center; }

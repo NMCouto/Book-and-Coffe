@@ -1,13 +1,3 @@
-## Como rodar o código:
-
-na pasta scr no arquivo "App.jsx"
-rode no terminal o seguinte comando:
-npm run dev (Certifique-se de que o arquivo está salvo)
-
-Copie o link que aparece ao lado de "Local" e cole no seu navegador
-export default defineConfig({
-  plugins: [react()],
-})
 // src/components/BarChart.jsx (ou onde você quiser)
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
@@ -33,39 +23,22 @@ ChartJS.register(
 
 export default function AnaliseDetalhes() {
   const data = {
-    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
-             'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+    labels: ['Ficção-Científica', 'Romance', 'Fantasia', 'Outros'],
     datasets: [
       {
         label: 'Vendas Mensais',
         data: [65, 59, 80, 81, 56, 75,65, 59, 80, 81, 56, 75], // Seus dados aqui
         backgroundColor: [
-          'rgba(255, 99, 132, 0.6)',
-          'rgba(54, 162, 235, 0.6)',
-          'rgba(255, 206, 86, 0.6)',
-          'rgba(75, 192, 192, 0.6)',
-          'rgba(153, 102, 255, 0.6)',
-          'rgba(255, 159, 64, 0.6)',
-          'rgba(255, 99, 132, 0.6)',
-          'rgba(54, 162, 235, 0.6)',
-          'rgba(255, 206, 86, 0.6)',
-          'rgba(75, 192, 192, 0.6)',
-          'rgba(153, 102, 255, 0.6)',
-          'rgba(255, 159, 64, 0.6)',
+'rgba(255, 99, 132, 0.7)', // Rosa (Ficção-Científica)
+          'rgba(54, 162, 235, 0.7)',  // Azul (Romance)
+          'rgba(255, 206, 86, 0.7)',  // Amarelo (Fantasia)
+          'rgba(75, 192, 192, 0.7)', // Aqua/Verde (Outros)
         ],
         borderColor: [
           'rgba(255, 99, 132, 1)',
           'rgba(54, 162, 235, 1)',
           'rgba(255, 206, 86, 1)',
           'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-          'rgba(256, 99, 132, 1)',
-          'rgba(55, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
         ],
         borderWidth: 1,
       },
