@@ -380,3 +380,142 @@ function escapeHtml(str) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 }
+
+/* ------------------------- Carrega empréstimos para devolução HOJE ------------------------- */
+async function carregarDevolucoesHoje() {
+    try {
+        const resp = await fetch("http://localhost:3000/emprestimos/devolucaoHoje");
+        if (!resp.ok) throw new Error("Resposta inválida");
+
+        const emprestimos = await resp.json();
+
+        // Seleciona coluna de devoluções
+        const coluna = document.querySelector('.kanban-column[data-id="1"] .kanban-cards');
+        if (!coluna) return;
+
+        // NÃO limpa — mantém conteúdo existente
+        // coluna.innerHTML = coluna.innerHTML; (removido porque não faz nada)
+
+        emprestimos.forEach(e => criarCardDevolucao(e, false));
+
+    } catch (err) {
+        console.error("Erro ao carregar devoluções de hoje:", err);
+    }
+}
+
+
+/* ------------------------- Carrega empréstimos ATRASADOS ------------------------- */
+async function carregarAtrasados() {
+    try {
+        const resp = await fetch("http://localhost:3000/emprestimos");
+        if (!resp.ok) throw new Error("Resposta inválida");
+
+        const emprestimos = await resp.json();
+        const hoje = new Date();
+        hoje.setHours(0,0,0,0);
+
+        const atrasados = emprestimos.filter(e => {
+            if (e.status !== "Atrasado") return false;
+
+            return e;
+        });
+
+        atrasados.forEach(e => criarCardDevolucao(e, true));
+
+    } catch (err) {
+        console.error("Erro ao carregar atrasados:", err);
+    }
+}
+
+
+/* ------------------------- Cria o card de devolução ------------------------- */
+function criarCardDevolucao(emprestimo, atrasado = false) {
+
+    const coluna = document.querySelector('.kanban-column[data-id="1"] .kanban-cards');
+    if (!coluna) return;
+
+    const card = document.createElement("div");
+    card.classList.add("kanban-card");
+    card.setAttribute("draggable", "true");
+
+    const badgeClass = atrasado ? "high" : "normal";
+    const badgeText = atrasado ? "Atrasado" : "Devolver hoje";
+
+    const dataDev = emprestimo.data_devolucao
+        ? new Date(emprestimo.data_devolucao).toLocaleDateString("pt-BR")
+        : "-";
+
+    card.innerHTML = `
+        <div class="badge ${badgeClass}">
+            <span>${badgeText}</span>
+        </div>
+
+        <p class="card-title">${escapeHtml(emprestimo.titulo || "—")}</p>
+
+        <div class="cards">
+            <div class="card-icons">  
+                <p><i class="fa-regular fa-calendar"></i> ${dataDev} </p>
+            </div>
+          
+            <div class="card-meta">
+                <p><i class="fa-solid fa-user"></i> CPF: 
+                    ${escapeHtml(String(emprestimo.cpf_emprestimo || "-"))}
+                </p>
+            </div>
+        </div>
+    `;
+
+    // Drag events
+    card.addEventListener("dragstart", (e) =>
+        e.currentTarget.classList.add("dragging"));
+
+    card.addEventListener("dragend", (e) =>
+        e.currentTarget.classList.remove("dragging"));
+
+    coluna.appendChild(card);
+}
+
+
+/* ------------------------- Carregar cards atrasados (modo alternativo) ------------------------- */
+async function carregarCards() {
+    const resposta = await fetch(API_BASE);
+    const emprestimos = await resposta.json();
+
+    const container = document.getElementById("cardsDevolucoes");
+    if (!container) return;
+
+    container.innerHTML = ""; // limpa antes de recriar
+
+    emprestimos
+        .filter(emp => emp.status === "Atrasado")
+        .forEach(emp => {
+            const card = document.createElement("div");
+            card.classList.add("card-atrasado");
+
+            card.innerHTML = `
+                <h3>${emp.titulo}</h3>
+
+                <div class="info-row">
+                    <span class="label">CPF:</span>
+                    <span class="value">${emp.cpf_emprestimo}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Devolução:</span>
+                    <span class="value">
+                        ${new Date(emp.data_devolucao).toLocaleDateString("pt-BR")}
+                    </span>
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+}
+
+// Chama tudo quando a página estiver pronta
+document.addEventListener("DOMContentLoaded", () => {
+    //carregarCards();          // Carrega cards gerais
+    //carregarDevolucoesHoje(); // Carrega devoluções de hoje
+    carregarAtrasados();      // Carrega entregas atrasadas
+});
+

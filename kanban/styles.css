@@ -241,6 +241,13 @@ option{
   align-items: center;
 }
 
+.card-atrasados {
+  display: block;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
 .card-icons {
   display: flex;
   gap: 12px;
@@ -419,3 +426,64 @@ option{
 .toast.erro {
   border-color: #dc2626;     /* vermelho */
 }
+
+.badge.high span {
+    background-color: #b00000 !important;
+    color: white !important;
+}
+
+.badge.normal span {
+    background-color: #007bff !important;
+}
+
+.card-atrasado {
+    background: #ffe5e5;
+    border-left: 6px solid #ff4d4d;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+    font-family: Arial;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.card-atrasado h3 {
+    margin: 0 0 10px 0;
+    color: #cc0000;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+}
+
+.info-row .label {
+    font-weight: bold;
+}
+
+.card-atrasado {
+    background: #ffe5e5;
+    border-left: 6px solid #ff4d4d;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+    font-family: Arial;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.card-atrasado h3 {
+    margin: 0 0 10px 0;
+    color: #cc0000;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+}
+
+.info-row .label {
+    font-weight: bold;
+}
+
+
