@@ -1,26 +1,27 @@
 import React from 'react';
-import SmallMonthSidebar from '../componentes/SmallMonthSidebar';
-import BarraFiltrada from '../componentes/BarraFiltrada'; // Importa o gráfico filtrável
-import { useFilter } from '../context/FilterContext';
+import SmallMonthSidebar from '../componentes/BarraMensal';
+import BarraFiltrada from '../componentes/BarraFiltrada'; 
+import { useFilter } from '../context/ConteudoFiltro';
 
 const AnaliseDetalhes: React.FC = () => {
   const { selectedMonth, monthNames } = useFilter();
   const monthName = monthNames[selectedMonth];
 
+  const pageTitle = `Detalhes da Análise em ${monthName}`;
+
   return (
-    <div className="details-layout">
+    <div className="details-layout" role="main"> 
       
-      {/* 1. A barra lateral de seleção de meses (Mês 1) */}
+
       <SmallMonthSidebar />
       
-      {/* 2. O conteúdo principal da página (Mês 2) */}
       <div className="details-content">
-        <h2 className="titulo-pagina">Detalhes da Análise em {monthName}</h2>
+        <h2 className="titulo-pagina" aria-label={pageTitle}>
+          {pageTitle}
+        </h2>
         
-        {/* Container para organizar os gráficos (pode usar flexbox se tiver mais de um) */}
-        <div className="charts-container-details">
+        <div className="charts-container-details" aria-label="Gráficos de análise e dados detalhados">
             
-            {/* ✅ GRÁFICO 1: Agora filtrado pelo mês selecionado na sidebar */}
             <BarraFiltrada />
         </div>
       </div>

@@ -1,25 +1,27 @@
 import React, { useState } from 'react';
 
-// Tipagem do estado do formulário
 interface EmprestimoForm {
-  isbn: number;
+  isbn: string; 
   dataInicio: string;
   dataTermino: string;
-  cpf: number;
+  cpf: string; 
 }
 
 const Emprestimo: React.FC = () => {
-  // Inicializa o estado do formulário
+  // Inicializa o estado do formulário com strings vazias para ISBN e CPF
   const [formData, setFormData] = useState<EmprestimoForm>({
-    isbn: 0,
+    isbn: '', 
     dataInicio: '',
     dataTermino: '',
-    cpf: 0,
+    cpf: '',
   });
 
-  // Manipulador genérico para atualizar o estado quando um campo muda
+  // Manipulador genérico para atualizar o estado
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    
+
+    // e o estado agora aceita strings para ISBN e CPF.
     setFormData(prev => ({
       ...prev,
       [name]: value,
@@ -30,8 +32,8 @@ const Emprestimo: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    //  Lógica de validação 
-    if (!formData.isbn || !formData.dataInicio || !formData.dataTermino || !formData.cpf) {
+    // Lógica de validação 
+    if (!formData.isbn.trim() || !formData.dataInicio || !formData.dataTermino || !formData.cpf.trim()) {
       alert("Por favor, preencha todos os campos.");
       return;
     }
@@ -40,15 +42,12 @@ const Emprestimo: React.FC = () => {
     console.log("Dados de Empréstimo a serem enviados:", formData);
     alert(`Empréstimo registrado com sucesso! \nISBN: ${formData.isbn}`);
 
-    // Aqui vai ter uma chamada fetch/Axios para o  backend
-    // Ex: sendEmprestimoData(formData);
-
     // Limpa o formulário após a submissão
     setFormData({
-      isbn: 0,
+      isbn: '',
       dataInicio: '',
       dataTermino: '',
-      cpf: 0,
+      cpf: '',
     });
   };
 
@@ -56,8 +55,9 @@ const Emprestimo: React.FC = () => {
     <div className="pagina">
       <h2 className="titulo-pagina">Registro de Empréstimo de Livro</h2>
 
-      <form className="emprestimo-form" onSubmit={handleSubmit}>
+      <form className="emprestimo-form" onSubmit={handleSubmit} aria-label="Formulário de Registro de Empréstimo">
         
+        {/* Campo ISBN */}
         <div className="form-group">
           <label htmlFor="isbn">ISBN do Livro:</label>
           <input
@@ -67,10 +67,13 @@ const Emprestimo: React.FC = () => {
             value={formData.isbn}
             onChange={handleChange}
             placeholder="Ex: 978-85-325-1100-7"
+            aria-describedby="isbn-help" 
             required
           />
+
         </div>
 
+        {/* Campo Data Início */}
         <div className="form-group">
           <label htmlFor="dataInicio">Data de Início (Empréstimo):</label>
           <input
@@ -83,6 +86,7 @@ const Emprestimo: React.FC = () => {
           />
         </div>
 
+        {/* Campo Data Término */}
         <div className="form-group">
           <label htmlFor="dataTermino">Data de Término (Devolução Prevista):</label>
           <input
@@ -94,8 +98,10 @@ const Emprestimo: React.FC = () => {
             required
           />
         </div>
-                <div className="form-group">
-          <label htmlFor="isbn">CPF do Cliente:</label>
+        
+        {/* Campo CPF */}
+        <div className="form-group">
+          <label htmlFor="cpf">CPF do Cliente:</label>
           <input
             type="text"
             id="cpf"
@@ -108,7 +114,14 @@ const Emprestimo: React.FC = () => {
         </div>
         
 
-        <button type="submit" className="submit-btn">Registrar Empréstimo</button>
+   
+        <button 
+          type="submit" 
+          className="submit-btn"
+          title="Clique para enviar os dados e registrar o empréstimo."
+        >
+          Registrar Empréstimo
+        </button>
       </form>
     </div>
   );

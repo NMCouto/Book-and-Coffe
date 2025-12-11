@@ -1,7 +1,7 @@
 import React from 'react';
-import { useFilter } from '../context/FilterContext';
+import { useFilter } from '../context/ConteudoFiltro';
 
-const SmallMonthSidebar: React.FC = () => {
+const BarraMensal: React.FC = () => {
   const { selectedMonth, setSelectedMonth, monthNames } = useFilter();
 
   return (
@@ -23,4 +23,4 @@ const SmallMonthSidebar: React.FC = () => {
   );
 };
 
-export default SmallMonthSidebar;
+export default BarraMensal;

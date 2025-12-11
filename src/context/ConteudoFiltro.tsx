@@ -1,12 +1,12 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
-interface FilterContextType {
-  selectedMonth: number; // Mês selecionado (0 = Janeiro, 11 = Dezembro)
+interface ConteudoFiltroType {
+  selectedMonth: number; 
   setSelectedMonth: (monthIndex: number) => void;
   monthNames: string[];
 }
 
-const FilterContext = createContext<FilterContextType | undefined>(undefined);
+const ConteudoFiltro = createContext<ConteudoFiltroType | undefined>(undefined);
 
 const MONTHS = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
@@ -18,14 +18,14 @@ export const FilterProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth()); 
 
   return (
-    <FilterContext.Provider value={{ selectedMonth, setSelectedMonth, monthNames: MONTHS }}>
+    <ConteudoFiltro.Provider value={{ selectedMonth, setSelectedMonth, monthNames: MONTHS }}>
       {children}
-    </FilterContext.Provider>
+    </ConteudoFiltro.Provider>
   );
 };
 
 export const useFilter = () => {
-  const context = useContext(FilterContext);
+  const context = useContext(ConteudoFiltro);
   if (context === undefined) {
     throw new Error('useFilter must be used within a FilterProvider');
   }

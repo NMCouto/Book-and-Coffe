@@ -1,9 +1,7 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
-import { useFilter } from '../context/FilterContext'; // ✅ Hook para o filtro
+import { useFilter } from '../context/ConteudoFiltro'; 
 
-// Importações e registro do ChartJS (mantém o que você já tinha)
-// ...
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -31,11 +29,11 @@ const MONTHLY_CATEGORY_DATA = [
     [80, 70, 95, 100], 
 ];
 
-export default function FilteredBarChart() {
+export default function BarraFiltrada() {
   const { selectedMonth, monthNames } = useFilter();
   const currentMonthName = monthNames[selectedMonth];
   
-  // ✅ Pega os dados do mês selecionado
+
   const currentMonthData = MONTHLY_CATEGORY_DATA[selectedMonth] || [0, 0, 0, 0];
 
   const data = {
@@ -60,7 +58,7 @@ export default function FilteredBarChart() {
     plugins: {
       title: {
         display: true,
-        text: `Distribuição de Vendas por Categoria em ${currentMonthName}`, // Título dinâmico
+        text: `Distribuição de Vendas por Categoria em ${currentMonthName}`, 
       },
       legend: { display: false },
     },

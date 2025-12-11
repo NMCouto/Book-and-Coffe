@@ -5,13 +5,12 @@ import Cadastro from './paginas/Cadastro'
 import Analise from './paginas/Analise'
 import AnaliseDetalhes from './paginas/AnaliseDetalhes'
 import Emprestimo from './paginas/Emprestimo'
-import { FilterProvider } from './context/FilterContext'; // Importe o provedor
+import { FilterProvider } from './context/ConteudoFiltro';
 import './App.css'
 
 function App() {
   return (
     <BrowserRouter>
-      {/* ✅ INÍCIO DO PROVEDOR: ONDE DEVE ESTAR */}
       <FilterProvider> 
         <div className="app-container">
           <Header />
@@ -21,13 +20,13 @@ function App() {
               <Routes>
                 <Route path="/" element={<Cadastro />} />
                 <Route path="/analise" element={<Analise />} />
-                <Route path="/analiseDetalhes" element={<AnaliseDetalhes/>}/> {/* AGORA ESTÁ DENTRO */}
+                <Route path="/analiseDetalhes" element={<AnaliseDetalhes/>}/>
                 <Route path="/emprestimo" element={<Emprestimo/>}/>
               </Routes>
             </main>
           </div>
         </div>
-      {/* ✅ FIM DO PROVEDOR: ONDE DEVE ESTAR */}
+
       </FilterProvider>
     </BrowserRouter>
   )
