@@ -10,13 +10,14 @@ import { AlertProvider } from './contexts/AlertContext';
 // Páginas
 import { Login } from './pages/login';
 import { Registrar } from './pages/registrar'; 
-import { NovaSenha } from './pages/esqueci-senha';
+import { EsqueciSenha } from './pages/esqueci-senha';
 import { Clientes } from './pages/clientes';
 import { Livros } from './pages/livros';
 import { Analise } from './pages/analise';
 import { Configuracao } from './pages/config'
 import { Emprestimos } from './pages/emprestimos';
 import { BoardPage } from './pages/Quadros/BoardPage';
+import { AuthProvider } from './contexts/AuthContext';
 
 
 function LayoutComSidebar({ children }: { children: React.ReactNode }) {
@@ -71,56 +72,58 @@ function LayoutComSidebar({ children }: { children: React.ReactNode }) {
 export function App() {
   return (
     <AlertProvider>
-      <BoardProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Login />} />
+      <AuthProvider>
+        <BoardProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Login />} />
 
-            <Route path="/esqueci-senha" element={<NovaSenha />} />
+              <Route path="/esqueci-senha" element={<EsqueciSenha />} />
 
-            <Route path="/registrar" element={<Registrar />} />
+              <Route path="/registrar" element={<Registrar />} />
 
-            <Route path="/inicio" element={<Navigate to="/quadros/operacional" replace />} />
+              <Route path="/inicio" element={<Navigate to="/quadros/operacional" replace />} />
 
-            <Route path="/quadros/:boardId" element={
-              <LayoutComSidebar>
-                <BoardPage />
-              </LayoutComSidebar>
-            } />
-            
-            <Route path="/clientes" element={
-              <LayoutComSidebar>
-                <Clientes />
-              </LayoutComSidebar>
-            } />
+              <Route path="/quadros/:boardId" element={
+                <LayoutComSidebar>
+                  <BoardPage />
+                </LayoutComSidebar>
+              } />
+              
+              <Route path="/clientes" element={
+                <LayoutComSidebar>
+                  <Clientes />
+                </LayoutComSidebar>
+              } />
 
-            <Route path="/livros" element={
-              <LayoutComSidebar>
-                <Livros />
-              </LayoutComSidebar>
-            } />
+              <Route path="/livros" element={
+                <LayoutComSidebar>
+                  <Livros />
+                </LayoutComSidebar>
+              } />
 
-            <Route path="/emprestimos" element={
-              <LayoutComSidebar>
-                <Emprestimos />
-              </LayoutComSidebar>
-            } />
+              <Route path="/emprestimos" element={
+                <LayoutComSidebar>
+                  <Emprestimos />
+                </LayoutComSidebar>
+              } />
 
-            <Route path="/config" element={
-              <LayoutComSidebar>
-                <Configuracao />
-              </LayoutComSidebar>
-            } />
+              <Route path="/config" element={
+                <LayoutComSidebar>
+                  <Configuracao />
+                </LayoutComSidebar>
+              } />
 
-            <Route path="/analise" element={
-              <LayoutComSidebar>
-                <Analise />
-              </LayoutComSidebar>
-            } />
-            
-          </Routes>
-        </BrowserRouter>
-      </BoardProvider>
+              <Route path="/analise" element={
+                <LayoutComSidebar>
+                  <Analise />
+                </LayoutComSidebar>
+              } />
+              
+            </Routes>
+          </BrowserRouter>
+        </BoardProvider>
+      </AuthProvider>
     </AlertProvider>
   )
 }

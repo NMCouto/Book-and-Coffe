@@ -87,6 +87,16 @@ export interface EmprestimoView {
   status: 'em_dia' | 'atrasado'; // Campo calculado pelo adapter
 }
 
+// Definições de usuário do sistema
+export type UserRole = 'gerente' | 'funcionario';
+
+export interface User {
+  username: string;
+  password?: string; // Opcional pois não retornamos senha pro front por segurança
+  role: UserRole;
+  name: string;
+}
+
 // --- KANBAN CUSTOMIZÁVEL ---
 
 
