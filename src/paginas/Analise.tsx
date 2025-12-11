@@ -1,12 +1,15 @@
-import { ArrowUp } from 'lucide-react'
+import React from 'react';
 import { Link } from 'react-router-dom';
-export default function Analise() {
+import { ArrowUp } from 'lucide-react';
+// import BarChart from '../components/BarChart'; // Assumindo que este componente existe e está correto
+
+const Analise: React.FC = () => {
   return (
     <div className="pagina">
       <h2 className="titulo-pagina">Diagnóstico mensal</h2>
 
+      {/* Cards de métrica */}
       <div className="cards-container">
-
         <div className="card-metric">
           <span>Total de Empréstimos</span>
           <div className="card-number">
@@ -15,7 +18,6 @@ export default function Analise() {
           </div>
         </div>
         
-
         <div className="card-metric">
           <span>Clientes Ativos</span>
           <div className="card-number">
@@ -31,23 +33,19 @@ export default function Analise() {
           <span className="up"><ArrowUp size={16} /> +23%</span>
         </div>
         </div>
-
       </div>
+      
+      {/* Aqui ficaria o BarChart / Gráfico de Pizza, etc. */}
+      {/* <BarChart /> */}
 
-      <div className="fotoGrafico">
-        <img src="./src/assets/pngegg.png" alt="foto" />
+      {/* Botão de navegação para a página de detalhes */}
+      <div className="button-details">
+        <Link to="/analiseDetalhes"> 
+          <button> Ver detalhes</button>
+        </Link>
       </div>
-
-    <div className="button-details">
-<Link to="/analiseDetalhes">
-      <button> Ver detalhes</button>
-      </Link>
     </div>
+  );
+};
 
-
-
-
-
-    </div>
-  )
-}
+export default Analise;

@@ -256,3 +256,189 @@ body {
 }
 .pagina { max-width: 1100px; margin: 0 auto; }
 .titulo-pagina { font-size: 2rem;  color: #333; text-align: center; }
+
+/* RESET BÁSICO */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* Garante o gradiente de fundo */
+  background: linear-gradient(135deg, #e0f7fa, #c8e6c9); 
+  min-height: 100vh;
+}
+.app-container { min-height: 100vh; }
+.main-layout { display: flex; } /* Para Sidebar principal + Conteúdo */
+.content { flex: 1; padding: 30px; }
+.pagina { max-width: 1100px; margin: 0 auto; }
+.titulo-pagina { font-size: 2rem;  color: #333; text-align: center; margin-bottom: 30px;}
+
+/* CARDS DE MÉTRICA (PÁGINA ANALISE) */
+.cards-container{
+  display: flex;
+  justify-content: center; /* Centraliza o grupo de cards */
+  gap: 40px; /* Espaçamento entre os cards */
+  margin-top: 20px; 
+}
+.card-metric{
+  background-color: white;
+  border-radius: 12px;
+  text-align: center;
+  padding: 10px;
+  height: 100px;
+  flex-basis: 200px; /* Largura fixa */
+  flex-shrink: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.card-number {
+    margin-top: 5px;
+    font-size: 1.2rem;
+}
+.card-number .up { color: green; margin-left: 5px;}
+
+/* BOTÃO FIXO (VER DETALHES) */
+.button-details {
+  position: fixed;
+  bottom: 20px;
+  /* Centralização Horizontal */
+  left: 50%;
+  transform: translateX(-50%); 
+  
+  width: 120px; 
+  height: 40px; 
+  border-radius: 8px;
+  background-color: #555;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+.button-details a {
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.button-details button {
+  background: none;
+  border: none;
+  color: white; 
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ---------------------------------------------------------------- */
+/* LAYOUT DA PÁGINA DETALHES (ANALISEDETALHES) */
+
+.details-layout {
+  /* Alinha a sidebar pequena e o conteúdo lado a lado */
+  display: flex;
+  min-height: calc(100vh - 80px); /* Ajusta a altura */
+}
+
+.details-content {
+  flex: 1; /* O conteúdo principal ocupa todo o espaço restante */
+  padding: 30px;
+}
+
+/* BARRA LATERAL DE MESES PEQUENA */
+.small-sidebar {
+  width: 70px; /* Largura estreita */
+  background: #f5f5f5;
+  padding: 10px 5px; 
+  box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.small-sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+}
+
+.month-btn-small {
+  background: none;
+  border: none;
+  padding: 8px 0;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #555;
+  border-radius: 6px;
+  text-align: center;
+  width: 100%;
+  transition: background 0.2s, color 0.2s;
+}
+
+.month-btn-small:hover {
+  background: #e0f7fa;
+  color: #007bff;
+}
+
+.active-month-small {
+  background: #007bff !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+/* FORMULÁRIO DE EMPRÉSTIMO */
+.emprestimo-form {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box; /* Garante que padding não estoure o width */
+}
+
+.form-group input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.submit-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  width: 100%;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3;
+}
