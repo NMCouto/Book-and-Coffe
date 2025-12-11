@@ -6,6 +6,7 @@ import '../styles/paginasTabelas.css';
 import { Pagination } from '../components/ui/Paginacao';
 import { GenericTable } from '../components/ui/GenericTable';
 import { GenericToolbar } from '../components/ui/GenericToolbar';
+import { useAlert } from '../contexts/AlertContext';
 
 // Tipos e Utilitários
 import type { AdvancedFilterState, LivroView, ColumnDef } from '../types';
@@ -27,6 +28,7 @@ export function Livros() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState<'todos' | 'disponiveis' | 'indisponiveis'>('todos');
+  const { showAlert } = useAlert();
   
   const [activeFilters, setActiveFilters] = useState<AdvancedFilterState>({
     genres: [], authors: [], publishers: [], startDate: null, endDate: null
@@ -45,13 +47,19 @@ export function Livros() {
     }
   }
 
-  async function handleDelete(id: string) {
-    if (confirm("Tem certeza que deseja excluir este livro?")) {
-       await LivrosService.delete(id);
-       loadLivros(); 
-    }
-  }
+  const handleDelete = async (id: string) => {
+    const confirmado = await showAlert({
+        title: 'Excluir Livro',
+        message: 'Tem certeza que deseja excluir este livro do acervo?',
+        confirmText: 'Sim',
+        cancelText: 'Cancelar'
+    });
 
+    if (confirmado) {
+        await LivrosService.delete(id);
+        loadLivros();
+    }
+  };
   useEffect(() => { loadLivros(); }, []);
 
   // --- DEFINIÇÃO DAS COLUNAS (Especialização da GenericTable) ---

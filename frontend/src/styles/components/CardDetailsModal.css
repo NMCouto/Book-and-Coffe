@@ -1,47 +1,213 @@
+/* Fundo e Container (Mantém igual, só ajustando padding se precisar) */
 .modal-overlay {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5); z-index: 1100;
+  background-color: rgba(0, 0, 0, 0.5); z-index: 2000;
   display: flex; justify-content: center; align-items: center;
   backdrop-filter: blur(2px);
 }
 
 .modal-content {
-  background-color: var(--bg-card); padding: 24px; border-radius: 12px;
-  width: 450px; max-width: 90%; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  position: relative; animation: modalFadeIn 0.2s ease-out;
+  background-color: var(--bg-card); 
+  padding: 30px; 
+  border-radius: 12px;
+  width: 500px; max-width: 90%; 
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  position: relative; 
+  animation: modalFadeIn 0.2s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-@keyframes modalFadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* --- HEADER / TÍTULO EDITÁVEL --- */
+.modal-header-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 5px;
 }
 
-.modal-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;
+/* Input do Título (Parece um texto h3, mas é editável) */
+.modal-title-input {
+  width: 100%;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--text-main);
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 8px;
+  border-radius: var(--border-radius-sm);
+  font-family: inherit;
 }
 
-.modal-header h3 { margin: 0; font-size: 1.25rem; color: var(--text-main); }
+.modal-title-input:focus {
+  background-color: var(--bg-hover);
+  border-color: var(--color-primary-blue);
+  outline: none;
+}
 
+/* --- SEÇÃO DE PRIORIDADE (DROPDOWN) --- */
+.priority-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative; /* Para o menu flutuar aqui */
+  width: fit-content;
+}
+
+.modal-label {
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* O Botão que mostra o valor atual */
+.priority-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-main);
+  min-width: 120px;
+  justify-content: space-between;
+}
+
+/* Menu Flutuante de Prioridade */
+.priority-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 10;
+  min-width: 120px;
+  overflow: hidden;
+}
+
+.priority-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  transition: background 0.2s;
+}
+
+.priority-option:hover {
+  background-color: var(--bg-hover);
+}
+
+.priority-option.selected {
+  background-color: var(--status-info-bg);
+  color: var(--color-primary-blue);
+  font-weight: bold;
+}
+
+/* Cores visuais para o texto da prioridade */
+.p-text-high { color: var(--status-danger-text); }
+.p-text-medium { color: var(--status-info-text); }
+.p-text-low { color: var(--status-success-text); }
+
+/* --- COMENTÁRIOS --- */
+.comment-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.modal-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: 1px solid var(--color-gray-medium);
+  border-radius: var(--border-radius-sm);
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+  background-color: var(--color-gray-light);
+  color: var(--text-main);
+}
+
+.modal-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary-blue);
+  background-color: var(--bg-card);
+}
+
+/* --- RODAPÉ (BOTÕES SEPARADOS) --- */
+.modal-footer-custom {
+  display: flex;
+  justify-content: space-between; /* Um na esquerda, um na direita */
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Botão Excluir (Canto Esquerdo) */
+.btn-delete-simple {
+  background: transparent;
+  color: var(--status-danger-text); 
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-weight: 600; /* Um pouco mais de destaque no peso da fonte */
+  transition: all 0.2s;
+  opacity: 0.9; /* Ligeira transparência para não ficar tão agressivo */
+}
+
+.btn-delete-simple:hover {
+  background-color: var(--status-danger-bg);
+  opacity: 1;
+}
+
+/* Botão Salvar (Canto Direito - Pílula Azul) */
+.btn-save-pill {
+  background-color: var(--color-primary-blue);
+  color: var(--color-white);
+  border: none;
+  padding: 10px 30px;
+  border-radius: 20px; /* Pílula */
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.2s;
+}
+
+.btn-save-pill:hover {
+  opacity: 0.9;
+}
+
+/* Botão de fechar X */
 .btn-close-modal {
-  background: none; border: none; cursor: pointer; color: var(--text-muted);
-  padding: 4px; border-radius: 50%; transition: background 0.2s; display: flex;
+  background-color: transparent; 
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted); 
+  padding: 6px;
+  border-radius: 50%;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.btn-close-modal:hover { background-color: var(--bg-hover); color: var(--text-main); }
 
-.modal-field { margin-bottom: 20px; }
-.modal-label { display: block; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
-.modal-value { font-size: 1rem; color: var(--text-main); }
-
-.priority-badge { display: inline-block; padding: 4px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 500; }
-.priority-high { background-color: var(--status-danger-bg); color: var(--status-danger-text); }
-.priority-medium { background-color: var(--status-info-bg); color: var(--status-info-text); }
-.priority-low { background-color: var(--status-success-bg); color: var(--status-success-text); }
-
-.modal-actions { margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; }
-.btn-delete-card {
-  display: flex; align-items: center; gap: 8px; background-color: var(--status-danger-bg);
-  color: var(--status-danger-text); border: 1px solid transparent; padding: 10px 16px;
-  border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;
+.btn-close-modal:hover {
+  background-color: var(--bg-hover); 
+  color: var(--text-main); /* O ícone fica um pouco mais escuro */
 }
-.btn-delete-card:hover { background-color: #ffcdd2; border-color: var(--status-danger-text); }

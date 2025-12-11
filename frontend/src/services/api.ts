@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Cria uma instância do Axios com o endereço do Backend
 export const api = axios.create({
-  baseURL: 'http://localhost:3000', // <--- Verifique se a porta do backend é 3000
+  baseURL: 'http://localhost:5500', // <--- Verifique a porta do backend
 });
 
 // (Opcional) Adiciona um log para ajudar a ver erros no console

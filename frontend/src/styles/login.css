@@ -125,3 +125,34 @@
 .btn-login:hover {
   opacity: 0.9;
 }
+
+/* =========================================
+   RODAPÉ DO LOGIN (LINKS)
+   ========================================= */
+
+.login-footer {
+  display: flex;
+  justify-content: space-between; /* Um na esquerda, um na direita */
+  align-items: center;
+  margin-top: var(--spacing-sm); /* Espaço acima dos links */
+  width: 100%;
+}
+
+.login-link {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary); /* Cinza padrão */
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Opcional: Deixar o "Não possuo conta" mais forte para destaque */
+.login-link.bold {
+  font-weight: 600;
+  color: var(--color-primary-blue);
+}
+
+.login-link:hover {
+  color: var(--color-primary-blue); /* Fica azul no hover */
+  text-decoration: underline;
+}

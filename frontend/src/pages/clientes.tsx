@@ -6,6 +6,7 @@ import '../styles/paginasTabelas.css';
 import { GenericToolbar } from '../components/ui/GenericToolbar';
 import { GenericTable } from '../components/ui/GenericTable';
 import { Pagination } from '../components/ui/Paginacao'; 
+import { useAlert } from '../contexts/AlertContext';
 
 // --- Específicos ---
 import { TopNavigation } from '../components/ui/TopNavigation';
@@ -22,6 +23,7 @@ export function Clientes() {
   const [currentPage, setCurrentPage] = useState(1);
   const [clientesData, setClientesData] = useState<ClienteView[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { showAlert } = useAlert();
 
   // Função para Carregar Dados (Backend ou Mock)
   async function loadClientes() {
@@ -42,12 +44,19 @@ export function Clientes() {
   }, []);
 
   // Função de Deletar
-  async function handleDelete(id: string) {
-    if (confirm("Tem certeza que deseja excluir este cliente?")) {
-      await ClientesService.delete(id);
-      loadClientes(); // Recarrega a lista para atualizar a tabela
+  const handleDelete = async (id: string) => {
+    const confirmado = await showAlert({
+        title: 'Excluir Cliente',
+        message: 'Tem certeza que deseja excluir este cliente? Essa ação não pode ser desfeita.',
+        confirmText: 'Sim',
+        cancelText: 'Cancelar'
+    });
+
+    if (confirmado) {
+        await ClientesService.delete(id);
+        loadClientes();
     }
-  }
+  };
 
   // --- CONFIGURAÇÃO DAS COLUNAS (A parte que especializa a tabela) ---
   const columns = useMemo<ColumnDef<ClienteView>[]>(() => [

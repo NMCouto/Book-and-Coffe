@@ -1,28 +1,21 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import  { useNavigate } from 'react-router-dom'; // Hook de navegação
+import { useNavigate, Link } from 'react-router-dom';
 import '../styles/login.css';
 
 export function Login() {
-  // Estados para capturar o que o usuário digita
   const [usuario, setUsuario] = useState('');
   const [senha, setSenha] = useState('');
   
   const navigate = useNavigate();
 
-  // Função disparada ao clicar em "Continuar"
   function handleLogin(event: FormEvent) {
-    event.preventDefault(); // Evita que a página recarregue
-
+    event.preventDefault(); 
     if (!usuario || !senha) {
       alert("Por favor, preencha todos os campos.");
       return;
     }
-    
-    // aqui teriam as validações com o backend, por enquanto só ignoramos e vamos para outra tela
-
     console.log("Login realizado:", { usuario, senha });
-     
     navigate('/quadros/operacional'); 
   }
 
@@ -30,7 +23,6 @@ export function Login() {
     <div className="login-container">
       <main className="login-card">
         
-        {/* Cabeçalho com Logo */}
         <header className="login-header">
           <div className="logo-container">
             <img src="/assets/logocafe.png" alt="Xícara" className="logo-img" />
@@ -39,7 +31,6 @@ export function Login() {
           <h2 className="login-subtitle">Realize o login para continuar</h2>
         </header>
 
-        {/* Formulário */}
         <form onSubmit={handleLogin} className="login-form">
           
           <div className="form-group">
@@ -69,6 +60,18 @@ export function Login() {
           <button type="submit" className="btn-login">
             Continuar
           </button>
+
+          {/* --- NOVOS LINKS AQUI --- */}
+          <div className="login-footer">
+            <Link to="/esqueci-senha" className="login-link">
+              Esqueci minha senha
+            </Link>
+            
+            <Link to="/registrar" className="login-link bold">
+              Não possuo conta
+            </Link>
+          </div>
+
         </form>
 
       </main>

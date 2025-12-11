@@ -5,14 +5,19 @@ import './App.css';
 
 // Componentes
 import { Sidebar } from './components/ui/Sidebar';
-
+import { BoardProvider } from './contexts/BoardContext';
+import { AlertProvider } from './contexts/AlertContext';
 // Páginas
-import { Login } from './pages/login'; 
+import { Login } from './pages/login';
+import { Registrar } from './pages/registrar'; 
+import { NovaSenha } from './pages/esqueci-senha';
 import { Clientes } from './pages/clientes';
 import { Livros } from './pages/livros';
+import { Analise } from './pages/analise';
+import { Configuracao } from './pages/config'
 import { Emprestimos } from './pages/emprestimos';
 import { BoardPage } from './pages/Quadros/BoardPage';
-import { BoardProvider } from './contexts/BoardContext';
+
 
 function LayoutComSidebar({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -65,39 +70,57 @@ function LayoutComSidebar({ children }: { children: React.ReactNode }) {
 
 export function App() {
   return (
-    <BoardProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Login />} />
+    <AlertProvider>
+      <BoardProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Login />} />
 
-          <Route path="/inicio" element={<Navigate to="/quadros/operacional" replace />} />
+            <Route path="/esqueci-senha" element={<NovaSenha />} />
 
-          <Route path="/quadros/:boardId" element={
-            <LayoutComSidebar>
-              <BoardPage />
-            </LayoutComSidebar>
-          } />
-          
-          <Route path="/clientes" element={
-            <LayoutComSidebar>
-              <Clientes />
-            </LayoutComSidebar>
-          } />
+            <Route path="/registrar" element={<Registrar />} />
 
-          <Route path="/livros" element={
-            <LayoutComSidebar>
-              <Livros />
-            </LayoutComSidebar>
-          } />
+            <Route path="/inicio" element={<Navigate to="/quadros/operacional" replace />} />
 
-          <Route path="/emprestimos" element={
-            <LayoutComSidebar>
-              <Emprestimos />
-            </LayoutComSidebar>
-          } />
-          
-        </Routes>
-      </BrowserRouter>
-    </BoardProvider>
+            <Route path="/quadros/:boardId" element={
+              <LayoutComSidebar>
+                <BoardPage />
+              </LayoutComSidebar>
+            } />
+            
+            <Route path="/clientes" element={
+              <LayoutComSidebar>
+                <Clientes />
+              </LayoutComSidebar>
+            } />
+
+            <Route path="/livros" element={
+              <LayoutComSidebar>
+                <Livros />
+              </LayoutComSidebar>
+            } />
+
+            <Route path="/emprestimos" element={
+              <LayoutComSidebar>
+                <Emprestimos />
+              </LayoutComSidebar>
+            } />
+
+            <Route path="/config" element={
+              <LayoutComSidebar>
+                <Configuracao />
+              </LayoutComSidebar>
+            } />
+
+            <Route path="/analise" element={
+              <LayoutComSidebar>
+                <Analise />
+              </LayoutComSidebar>
+            } />
+            
+          </Routes>
+        </BrowserRouter>
+      </BoardProvider>
+    </AlertProvider>
   )
 }

@@ -1,6 +1,7 @@
 import { Draggable } from '@hello-pangea/dnd';
 import type { CardView } from '../../types';
 import '../../styles/kanban.css';
+import { CalendarBlank, User } from 'phosphor-react'; // Importar ícones
 
 interface KanbanCardProps {
   card: CardView;
@@ -18,20 +19,43 @@ export function KanbanCard({ card, index, onClick }: KanbanCardProps) {
           {...provided.dragHandleProps}
           onClick={() => onClick(card)}
           className={`kanban-card priority-${card.priority} ${snapshot.isDragging ? 'dragging' : ''}`}
-          // IMPORTANTE: Este style abaixo NÃO PODE ser removido.
-          // Ele é essencial para a biblioteca de drag-and-drop funcionar (movimento do card).
           style={{ ...provided.draggableProps.style }}
         >
-          {/* Estilo do título movido para classe .card-title-text */}
+          {/* Se estiver atrasado, mostra o Badge Vermelho no topo */}
+          {card.isLate && (
+            <div className="card-badge-late">Atrasado</div>
+          )}
+
           <div className="card-title-text">
             {card.title}
           </div>
           
-          <div className="card-meta">
-             <span className="priority-text">
-               {card.priority === 'high' ? 'Alta' : card.priority === 'medium' ? 'Média' : 'Baixa'}
-             </span>
-          </div>
+          {/* Informações Extras (Data e CPF) - Só renderiza se existirem */}
+          {(card.dueDate || card.cpf) && (
+            <div className="card-info-rows">
+               {card.dueDate && (
+                 <div className="info-row">
+                   <CalendarBlank size={14} weight="bold" />
+                   <span>{card.dueDate}</span>
+                 </div>
+               )}
+               {card.cpf && (
+                 <div className="info-row">
+                   <User size={14} weight="bold" />
+                   <span>CPF: {card.cpf}</span>
+                 </div>
+               )}
+            </div>
+          )}
+
+          {/* Mantém a prioridade original se NÃO for um card de devolução (opcional, ou mostra ambos) */}
+          {!card.isLate && !card.dueDate && (
+             <div className="card-meta">
+                <span className="priority-text">
+                  {card.priority === 'high' ? 'Alta' : card.priority === 'medium' ? 'Média' : 'Baixa'}
+                </span>
+             </div>
+          )}
         </div>
       )}
     </Draggable>

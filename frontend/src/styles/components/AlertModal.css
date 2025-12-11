@@ -1,0 +1,94 @@
+/* Container Fundo Escuro */
+.alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6); /* Um pouco mais escuro que o padrão */
+  z-index: 9999; /* Fica acima de TUDO (Modais, Sidebars) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* O Card Branco */
+.alert-card {
+  background-color: var(--color-white);
+  width: 450px;
+  max-width: 90%;
+  border-radius: var(--border-radius-lg); /* 15px */
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  animation: scaleUp 0.2s ease-out;
+}
+
+/* Animações */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* Título Pequeno (Ex: Alerta-exclusão) */
+.alert-title {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+  align-self: flex-start; /* Alinha no canto esquerdo conforme imagem? Ou centro? Mantive centro */
+  width: 100%;
+  text-align: left;
+}
+
+/* Mensagem Principal */
+.alert-message {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--text-main);
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+/* Container dos Botões */
+.alert-actions {
+  display: flex;
+  gap: 40px; /* Espaço grande entre botões conforme imagem */
+  width: 100%;
+  justify-content: center;
+}
+
+/* Botão Genérico do Alerta */
+.btn-alert {
+  padding: 10px 30px;
+  border-radius: 20px; /* Bem redondo */
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.2s;
+  min-width: 120px;
+}
+
+.btn-alert:active {
+  transform: scale(0.95);
+}
+
+.btn-alert:hover {
+  opacity: 0.9;
+}
+
+/* Cores Específicas */
+.btn-alert-cancel {
+  background-color: var(--status-danger-text);
+  color: white;
+}
+
+.btn-alert-confirm {
+  background-color: var(--color-primary-blue); 
+  color: white;
+}

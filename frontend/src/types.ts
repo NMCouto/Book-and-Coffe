@@ -6,8 +6,7 @@ export interface MongoDocument {
   __v?: number;
 }
 
-export type CardPriority = 'low' | 'medium' | 'high';
-export type ColumnId = 'todo' | 'doing' | 'done';
+export type ColumnId = string;
 
 // ==========================================
 // TIPOS RAW (DO BANCO DE DADOS)
@@ -46,8 +45,8 @@ export interface EmprestimoDB extends MongoDocument {
 export interface CardDB extends MongoDocument {
   title: string;
   comment?: string;
-  priority: CardPriority;
-  columnId: ColumnId;
+  priority: 'low' | 'medium' | 'high';
+  columnId: string;
   createdAt: string;
 }
 
@@ -100,16 +99,20 @@ export interface BoardView {
 export interface CardView {
   id: string;
   title: string;
-  priority: CardPriority;
-  columnId: ColumnId;
-  // Adicione outros campos se quiser mostrar na frente do cartão
+  priority: 'low' | 'medium' | 'high';
+  columnId: string;
+  comment?: string;
+
+  dueDate?: string; // Data de devolução
+  cpf?: string;     // CPF do cliente
+  isLate?: boolean; // Se está atrasado (para mostrar a tag vermelha)
 }
 // Atualizamos a coluna para não ter ID fixo ('todo', 'doing')
 // Estrutura Visual do Quadro (Colunas contendo listas de Cards)
 export interface KanbanColumnData {
   id: string; // Agora é um UUID (ex: "col-1234")
   title: string;
-  color?: 'red' | 'blue' | 'green' | 'gray'; // Para personalização visual
+  color?: string; // Para personalização visual
   cards: CardView[];
 }
 

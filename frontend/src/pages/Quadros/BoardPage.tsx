@@ -8,7 +8,7 @@ import '../../styles/paginasTabelas.css';
 
 export function BoardPage() {
   const { boardId } = useParams();
-  const { boards, moveCard, addCardToBoard, addColumnToBoard, deleteCard } = useBoard();
+  const { boards, moveCard, addCardToBoard, addColumnToBoard, deleteCard, renameColumn, deleteColumn, changeColumnColor } = useBoard();
   
   const [selectedCard, setSelectedCard] = useState<CardView | null>(null);
 
@@ -43,21 +43,24 @@ export function BoardPage() {
         <GenericBoard 
           columns={currentBoard.columns}
           onCardMove={(result) => moveCard(currentBoard.id, result)}
-          onAddCard={(columnId) => {
-              const title = prompt("Título da tarefa:");
-              if(title) addCardToBoard(currentBoard.id, columnId, title);
+          onAddCard={(columnId, title) => {
+              addCardToBoard(currentBoard.id, columnId, title);
           }}
-          onAddColumn={() => {
-              const title = prompt("Nome da nova lista:");
-              if(title) addColumnToBoard(currentBoard.id, title);
+          onAddColumn={(title) => {
+              addColumnToBoard(currentBoard.id, title);
           }}
           onCardClick={handleCardClick}
+
+          onChangeColumnColor={(colId, color) => changeColumnColor(currentBoard.id, colId, color)}
+          onRenameColumn={(colId, newTitle) => renameColumn(currentBoard.id, colId, newTitle)}
+          onDeleteColumn={(colId) => deleteColumn(currentBoard.id, colId)}
         />
       </div>
 
       {selectedCard && (
         <CardDetailsModal 
-            card={selectedCard} 
+            card={selectedCard}
+            boardId={currentBoard.id}
             onClose={() => setSelectedCard(null)} 
             onDelete={handleDeleteCurrentCard}
         />

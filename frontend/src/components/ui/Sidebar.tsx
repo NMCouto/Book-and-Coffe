@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'; 
-import { House, Users, BookOpen, Money, Plus, SignOut, Kanban, Trash } from 'phosphor-react';
+import { House, Users, X,BookOpen, Money, Plus, SignOut, Kanban, Trash, Gear, ChartLine } from 'phosphor-react';
 import { useBoard } from '../../contexts/BoardContext.tsx';
 import '../../styles/components/Sidebar.css';
 
@@ -41,8 +41,8 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
     <>
       <div className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
-           <span className="brand-name">Bookend</span>
-           <button className="btn-close" onClick={onClose}>X</button>
+           <span className="brand-name">Book and Coffee</span>
+           <button className="btn-close" onClick={onClose}><X size={20} weight="bold"/></button>
         </div>
 
         <nav className="sidebar-nav">
@@ -66,7 +66,22 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
             <span>Empréstimos</span>
           </NavLink>
 
-          <div className="nav-divider" />
+          <NavLink to="/analise" className="nav-link" onClick={onClose}>
+            <ChartLine size={20} weight="bold" /> 
+            <span>Análises</span>
+          </NavLink>
+
+          {/* Linha Divisória */}
+          <div className="divider"></div>
+
+          {/* Configurações */}
+          <NavLink to="/config" className="nav-link" onClick={onClose}>
+            <Gear size={20} weight="bold" /> 
+            <span>Configurações</span>
+          </NavLink>
+
+          {/* Linha Divisória */}
+          <div className="divider"></div>
 
           <div className="boards-section">
             <div className="section-header">
