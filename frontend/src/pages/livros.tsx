@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import { PencilSimple, Trash, Faders } from 'phosphor-react';
 import '../styles/paginasTabelas.css'; 
 
@@ -13,6 +12,7 @@ import type { AdvancedFilterState, LivroView, ColumnDef } from '../types';
 import { parseBookDate } from '../utils/validator';
 
 // --- Específicos ---
+import { TopNavigation } from '../components/ui/TopNavigation';
 import { LivrosService } from '../services/livrosService';
 import { CadastroLivro } from '../components/cadastro_livros';
 import { ModalFiltrarLivro } from '../components/filtrarLivro';
@@ -132,10 +132,7 @@ export function Livros() {
   return (
     <div className="page-container">
       
-      <div className="tabs-container">
-        <Link to="/clientes" className="tab-button">Clientes</Link>
-        <Link to="/livros" className="tab-button active">Livros</Link>
-      </div>
+      <TopNavigation />
 
       {/* TOOLBAR GENÉRICA + INJEÇÃO DE FILTROS ESPECÍFICOS */}
       <GenericToolbar

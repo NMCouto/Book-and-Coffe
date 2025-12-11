@@ -1,4 +1,3 @@
-/* --- INTERVALO DE DATA --- */
 .date-range-container {
   display: flex;
   gap: 20px;
@@ -13,24 +12,23 @@
 
 .date-display-btn {
   padding: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-gray-medium);
   border-radius: 12px;
-  background: white;
+  background: var(--bg-card);
   text-align: center;
   cursor: pointer;
   font-size: 0.95rem;
-  color: #555;
+  color: var(--text-secondary);
 }
 
-/* --- CUSTOM DATE PICKER POPUP --- */
 .custom-datepicker {
   position: absolute;
   top: 100%;
   left: 0;
-  background: white;
-  border: 1px solid #ccc;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 15px var(--color-shadow);
   padding: 20px;
   z-index: 20;
   width: 300px;
@@ -49,16 +47,16 @@
     background: none;
     border: none;
     cursor: pointer;
-    color: #333;
+    color: var(--text-main);
     display: flex;
     align-items: center;
     padding: 4px;
 }
 
 .month-year-btn {
-  border: 1px solid #2998DF;
-  color: #2998DF;
-  background: white;
+  border: 1px solid var(--color-primary-blue);
+  color: var(--color-primary-blue);
+  background: var(--bg-card);
   padding: 5px 15px;
   border-radius: 15px;
   font-weight: bold;
@@ -69,7 +67,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #2998DF;
+  color: var(--color-primary-blue);
   padding: 8px; 
   display: flex;
   align-items: center;
@@ -78,68 +76,51 @@
   transition: background-color 0.2s;
 }
 .nav-arrow:hover {
-  background-color: rgba(41, 152, 223, 0.1);
+  background-color: var(--status-info-bg);
 }
 
 .picker-actions {
   display: flex;
   justify-content: space-between;
   margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
 }
 
-/* Lista de Anos com Scroll Visível */
+/* Scrollbar */
 .year-list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  max-height: 180px; /* Altura máxima */
-  overflow-y: auto;  /* Habilita o scroll */
-  padding-right: 5px; /* Espaço para a barra de rolagem não colar no texto */
-  
-  /* Estilização da barra de rolagem (WebKit - Chrome, Safari, Edge) */
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 5px;
   scrollbar-width: thin;
-  scrollbar-color: #ccc #f0f0f0;
+  scrollbar-color: var(--color-gray-medium) var(--bg-hover);
 }
 
-.year-list::-webkit-scrollbar {
-  width: 6px;
-}
-.year-list::-webkit-scrollbar-track {
-  background: #f0f0f0;
-  border-radius: 3px;
-}
-.year-list::-webkit-scrollbar-thumb {
-  background-color: #ccc;
-  border-radius: 3px;
-}
+.year-list::-webkit-scrollbar { width: 6px; }
+.year-list::-webkit-scrollbar-track { background: var(--bg-hover); border-radius: 3px; }
+.year-list::-webkit-scrollbar-thumb { background-color: var(--color-gray-medium); border-radius: 3px; }
 
 .year-item {
   padding: 10px;
   text-align: center;
   cursor: pointer;
   border-radius: 8px;
-  background-color: #f9f9f9;
+  background-color: var(--bg-hover);
   font-weight: 500;
+  color: var(--text-main);
 }
-.year-item:hover { background: rgba(41, 152, 223, 0.1); }
+.year-item:hover { background: var(--status-info-bg); }
 
-/* Ações do Rodapé do Picker (Botões Limpar e Aplicar) */
-.picker-actions {
-  display: flex;
-  justify-content: space-between; /* Separa os botões */
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px solid #eee;
-}
-
-/* Botão Limpar (Vermelho sutil) */
 .btn-reset {
     background: none;
     border: none;
-    color: #D32F2F;
+    color: var(--status-danger-text);
     font-weight: bold;
     cursor: pointer;
     padding: 5px 10px;
     border-radius: 4px;
 }
-.btn-reset:hover { background-color: #ffebee; }
+.btn-reset:hover { background-color: var(--status-danger-bg); }

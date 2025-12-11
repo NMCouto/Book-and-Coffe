@@ -1,3 +1,7 @@
+/* =========================================
+   LOGIN - LAYOUT E CONTAINER
+   ========================================= */
+
 /* Container que segura o card no centro da tela */
 .login-container {
   display: flex;
@@ -5,24 +9,27 @@
   justify-content: center;
   min-height: 100vh;
   padding: var(--spacing-md);
-  /* O fundo já vem do body no global.css, mas garantimos aqui */
+  /* O fundo vem do body no global.css (var(--bg-gradiente)) */
 }
 
 /* O Cartão Branco */
 .login-card {
-  background-color: var(--color-white);
+  background-color: var(--bg-card); /* Padronizado: branco */
   width: 100%;
   max-width: 480px; 
-  padding: 40px;
-  border-radius: var(--border-radius-sm);
+  padding: 40px; /* Padding interno específico do card de login pode manter fixo ou usar var(--spacing-xl) se criar */
+  border-radius: var(--border-radius-md); /* Padronizado: 8px */
   box-shadow: 0 4px 15px var(--color-shadow);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
-  border: 1px solid var(--color-gray-medium);
+  border: 1px solid var(--border-color); /* Padronizado: borda sutil */
 }
 
-/* Cabeçalho (Logo + Texto) */
+/* =========================================
+   CABEÇALHO (LOGO E TÍTULOS)
+   ========================================= */
+
 .login-header {
   text-align: center;
   display: flex;
@@ -50,11 +57,14 @@
 .login-subtitle {
   font-size: var(--font-size-md);
   font-weight: bold;
-  color: #000;
+  color: var(--text-main); /* Era #000, agora usa a cor padrão de texto */
   margin-top: var(--spacing-sm);
 }
 
-/* Formulário */
+/* =========================================
+   FORMULÁRIO
+   ========================================= */
+
 .login-form {
   display: flex;
   flex-direction: column;
@@ -64,41 +74,47 @@
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--spacing-sm); /* Era 6px, padronizado para 8px */
 }
 
 .form-label {
   font-size: var(--font-size-sm);
   font-weight: bold;
-  color: #000;
+  color: var(--text-main); /* Padronizado */
 }
 
-/* Input estilo "Pílula" */
+/* Input estilo "Pílula" / Arredondado */
 .form-input {
   padding: 12px 16px;
-  border: 1px solid #757575;
-  border-radius: 8px; 
+  /* Usando gray-medium para borda de input (mais visível que border-color) */
+  border: 1px solid var(--color-gray-medium); 
+  border-radius: var(--border-radius-md); /* Padronizado: 8px */
   font-size: var(--font-size-md);
   color: var(--color-gray-dark);
+  background-color: var(--color-white); /* Garante fundo branco no input */
   outline: none;
   transition: border-color 0.2s;
 }
 
 .form-input::placeholder {
-  color: #9E9E9E;
+  color: var(--text-muted); /* Padronizado: #999 */
 }
 
 .form-input:focus {
   border-color: var(--color-primary-blue);
+  background-color: var(--color-white);
 }
 
-/* Botão Azul */
+/* =========================================
+   BOTÕES
+   ========================================= */
+
 .btn-login {
   background-color: var(--color-primary-blue); 
   color: var(--color-white);
   border: none;
   padding: 12px;
-  border-radius: 8px;
+  border-radius: var(--border-radius-md); /* Padronizado: 8px */
   font-size: var(--font-size-lg);
   font-weight: bold;
   cursor: pointer;

@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import { PencilSimple, Trash } from 'phosphor-react';
 import '../styles/paginasTabelas.css';
 
@@ -9,6 +8,7 @@ import { GenericTable } from '../components/ui/GenericTable';
 import { Pagination } from '../components/ui/Paginacao'; 
 
 // --- Específicos ---
+import { TopNavigation } from '../components/ui/TopNavigation';
 import { CadastroCliente } from '../components/cadastro_cliente';
 import { ClientesService } from '../services/clientesService';
 import type { ClienteView, ColumnDef } from '../types';
@@ -123,10 +123,8 @@ export function Clientes() {
 
   return (
     <div className="page-container">
-      <div className="tabs-container">
-        <Link to="/clientes" className="tab-button active">Clientes</Link>
-        <Link to="/livros" className="tab-button">Livros</Link>
-      </div>
+
+      <TopNavigation />
 
       {/* Toolbar Genérica + Filtros Específicos */}
       <GenericToolbar

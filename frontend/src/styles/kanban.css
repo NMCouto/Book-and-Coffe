@@ -1,0 +1,148 @@
+/* Layout do Board */
+.kanban-board {
+  display: flex;
+  gap: 20px;
+  height: calc(100vh - 160px);
+  overflow-x: auto;
+  padding-bottom: 20px;
+  align-items: flex-start;
+}
+
+/* --- COLUNA --- */
+.kanban-column {
+  background-color: var(--bg-body); /* #f4f5f7 */
+  min-width: 280px;
+  width: 280px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  box-shadow: 0 2px 4px var(--color-shadow);
+  overflow: hidden;
+}
+
+.column-header {
+  padding: 12px 16px;
+  font-weight: bold;
+  color: var(--text-main);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: transparent;
+}
+
+/* Cores específicas mantidas (hardcoded pois são cores de semântica do Kanban) */
+.column-header.header-todo { background-color: #FF5252; color: white; }
+.column-header.header-doing { background-color: #448AFF; color: white; }
+.column-header.header-done { background-color: #69F0AE; color: #1b5e20; }
+
+.column-content {
+  padding: 12px;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 50px;
+}
+
+/* --- CARTÃO --- */
+.kanban-card {
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px var(--color-shadow);
+  cursor: grab;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  border-left: 5px solid transparent; 
+}
+
+.kanban-card:hover {
+  background-color: var(--bg-card);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+
+.kanban-card.dragging {
+  background-color: var(--status-info-bg);
+  transform: rotate(3deg);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* Cores de Prioridade (Mantidas hardcoded pois são específicas) */
+.kanban-card.priority-high { border-left-color: #c30505; }
+.kanban-card.priority-medium { border-left-color: #ffa42c; }
+.kanban-card.priority-low { border-left-color: #5aa15c; }
+
+.card-meta {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+.priority-text {
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* --- BOTÃO ADICIONAR LISTA --- */
+.btn-add-list {
+  min-width: 280px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 2px dashed var(--color-gray-medium);
+  border-radius: 12px;
+  padding: 15px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s;
+  height: fit-content;
+}
+
+.btn-add-list:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-color: var(--text-muted);
+  color: var(--text-main);
+}
+
+.column-counter {
+  font-size: 0.8rem;
+  background-color: rgba(255, 255, 255, 0.3);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.btn-add-card {
+  margin: 8px;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  width: calc(100% - 16px);
+  border-radius: var(--border-radius-sm);
+  transition: all 0.2s;
+}
+
+.btn-add-card:hover {
+  background-color: var(--color-shadow);
+  color: var(--text-main);
+}
+
+.card-title-text {
+  font-size: 0.95rem;
+  color: var(--text-main);
+  font-weight: 500;
+}

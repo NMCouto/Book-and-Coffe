@@ -1,10 +1,13 @@
 // ==========================================
-// TIPOS GERAIS DO MONGODB
+// TIPOS GERAIS
 // ==========================================
 export interface MongoDocument {
   _id: string;
   __v?: number;
 }
+
+export type CardPriority = 'low' | 'medium' | 'high';
+export type ColumnId = 'todo' | 'doing' | 'done';
 
 // ==========================================
 // TIPOS RAW (DO BANCO DE DADOS)
@@ -42,9 +45,9 @@ export interface EmprestimoDB extends MongoDocument {
 
 export interface CardDB extends MongoDocument {
   title: string;
-  comment: string;
-  priority: 'low' | 'medium' | 'high';
-  columnId: 'todo' | 'doing' | 'done';
+  comment?: string;
+  priority: CardPriority;
+  columnId: ColumnId;
   createdAt: string;
 }
 
@@ -75,6 +78,41 @@ export interface LivroView {
   volume: number | string;
 }
 
+export interface EmprestimoView {
+  id: string;
+  titulo: string;
+  isbn: string;
+  cpfCliente: string;
+  dataEmissao: string;
+  dataDevolucao: string;
+  status: 'em_dia' | 'atrasado'; // Campo calculado pelo adapter
+}
+
+// --- KANBAN CUSTOMIZÁVEL ---
+
+
+export interface BoardView {
+  id: string;
+  title: string;
+  columns: KanbanColumnData[];
+}
+
+export interface CardView {
+  id: string;
+  title: string;
+  priority: CardPriority;
+  columnId: ColumnId;
+  // Adicione outros campos se quiser mostrar na frente do cartão
+}
+// Atualizamos a coluna para não ter ID fixo ('todo', 'doing')
+// Estrutura Visual do Quadro (Colunas contendo listas de Cards)
+export interface KanbanColumnData {
+  id: string; // Agora é um UUID (ex: "col-1234")
+  title: string;
+  color?: 'red' | 'blue' | 'green' | 'gray'; // Para personalização visual
+  cards: CardView[];
+}
+
 // ==========================================
 // TIPOS DE INPUT (PARA FORMULÁRIOS)
 // Use estes tipos nos Modais de Cadastro (antes de ter _id)
@@ -83,6 +121,14 @@ export interface LivroView {
 export type ClienteInput = Omit<ClienteDB, '_id' | '__v' | 'ativo' | 'emprestimosAtivos'>;
 export type LivroInput = Omit<LivroDB, '_id' | '__v'>;
 export type CardInput = Omit<CardDB, '_id' | '__v' | 'createdAt'>;
+
+export interface EmprestimoInput {
+  titulo: string;
+  isbn: string | number;
+  cpf_emprestimo: string | number;
+  data_emissao: Date | string;
+  data_devolucao: Date | string;
+}
 
 // ==========================================
 // TIPOS DE FILTRO (UI STATE)

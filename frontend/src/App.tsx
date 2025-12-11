@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { List } from 'phosphor-react'; // Ícone do menu (Hambúrguer)
+import './App.css';
 
 // Componentes
 import { Sidebar } from './components/ui/Sidebar';
@@ -8,8 +9,10 @@ import { Sidebar } from './components/ui/Sidebar';
 // Páginas
 import { Login } from './pages/login'; 
 import { Clientes } from './pages/clientes';
-import { Kanban } from './pages/kanban';
 import { Livros } from './pages/livros';
+import { Emprestimos } from './pages/emprestimos';
+import { BoardPage } from './pages/Quadros/BoardPage';
+import { BoardProvider } from './contexts/BoardContext';
 
 function LayoutComSidebar({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -62,29 +65,39 @@ function LayoutComSidebar({ children }: { children: React.ReactNode }) {
 
 export function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
+    <BoardProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
 
-        <Route path="/kanban" element={
-          <LayoutComSidebar>
-            <Kanban />
-          </LayoutComSidebar>
-        } />
-        
-        <Route path="/clientes" element={
-          <LayoutComSidebar>
-            <Clientes />
-          </LayoutComSidebar>
-        } />
+          <Route path="/inicio" element={<Navigate to="/quadros/operacional" replace />} />
 
-        <Route path="/livros" element={
-          <LayoutComSidebar>
-            <Livros />
-          </LayoutComSidebar>
-        } />
-        
-      </Routes>
-    </BrowserRouter>
+          <Route path="/quadros/:boardId" element={
+            <LayoutComSidebar>
+              <BoardPage />
+            </LayoutComSidebar>
+          } />
+          
+          <Route path="/clientes" element={
+            <LayoutComSidebar>
+              <Clientes />
+            </LayoutComSidebar>
+          } />
+
+          <Route path="/livros" element={
+            <LayoutComSidebar>
+              <Livros />
+            </LayoutComSidebar>
+          } />
+
+          <Route path="/emprestimos" element={
+            <LayoutComSidebar>
+              <Emprestimos />
+            </LayoutComSidebar>
+          } />
+          
+        </Routes>
+      </BrowserRouter>
+    </BoardProvider>
   )
 }

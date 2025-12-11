@@ -23,7 +23,7 @@ export function Login() {
 
     console.log("Login realizado:", { usuario, senha });
      
-    navigate('/kanban'); 
+    navigate('/quadros/operacional'); 
   }
 
   return (
