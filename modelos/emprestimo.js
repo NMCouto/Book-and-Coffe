@@ -13,7 +13,8 @@ const emprestimoSchema = new mongoose.Schema({
             return data;
         }
     },
-    status: { type: String, required: true, default: "Pendente"}
+    status: { type: String, required: true, default: "Pendente"},
+    comentario: {type: String, default: ""}
 });
 
 export default mongoose.model("emprestimo", emprestimoSchema);

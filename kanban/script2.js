@@ -411,9 +411,7 @@ async function carregarAtrasados() {
         if (!resp.ok) throw new Error("Resposta inválida");
 
         const emprestimos = await resp.json();
-        const hoje = new Date();
-        hoje.setHours(0,0,0,0);
-
+        
         const atrasados = emprestimos.filter(e => {
             if (e.status !== "Atrasado") return false;
 
