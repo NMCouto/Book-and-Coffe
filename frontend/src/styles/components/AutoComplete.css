@@ -3,28 +3,24 @@
   width: 100%;
 }
 
-/* Container do input + ícone */
 .search-input-icon {
   position: relative;
   width: 100%;
 }
 
-/* O Input em si */
 .search-input-icon .form-input {
   width: 100%;
-  /* Adiciona espaço na direita para o ícone não ficar em cima do texto */
   padding-right: 40px; 
-  box-sizing: border-box; /* Garante que o padding não aumente a largura total */
+  box-sizing: border-box;
 }
 
-/* O ícone da lupa */
 .search-input-icon .search-icon {
   position: absolute;
-  right: 12px; /* Distância da borda direita */
-  top: 50%;    /* Centraliza verticalmente */
-  transform: translateY(-50%); /* Ajuste fino da centralização */
-  color: #999; /* Cor mais suave */
-  pointer-events: none; /* Permite clicar através do ícone no input */
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
 }
 
 .selected-chips-area {
@@ -34,19 +30,15 @@
   margin-bottom: 8px;
 }
 
-.search-input-icon {
-  position: relative;
-}
-
 .suggestions-list {
   position: absolute;
   top: 100%;
   left: 0;
   width: 100%;
-  background: white;
-  border: 1px solid #ccc;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px var(--color-shadow);
   z-index: 10;
   max-height: 150px;
   overflow-y: auto;
@@ -56,9 +48,10 @@
 .suggestion-item {
   padding: 10px;
   cursor: pointer;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--bg-hover);
+  color: var(--text-main);
 }
 
 .suggestion-item:hover {
-  background-color: #f5f5f5;
+  background-color: var(--bg-hover);
 }

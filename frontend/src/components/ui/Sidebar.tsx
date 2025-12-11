@@ -1,95 +1,134 @@
-//import { useContext } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { X, Plus, SignOut } from 'phosphor-react';
-//import { AuthContext } from '../contexts/AuthContext';
-import '../../styles/Sidebar.css';
+import { NavLink, useNavigate } from 'react-router-dom'; 
+import { House, Users, X,BookOpen, Money, Plus, SignOut, Kanban, Trash, Gear, ChartLine } from 'phosphor-react';
+import { useBoard } from '../../contexts/BoardContext.tsx';
+import '../../styles/components/Sidebar.css';
 
-interface SidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+// Adicionei onClose nas props para poder fechar ao navegar
+export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const navigate = useNavigate();
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const location = useLocation(); // Para saber em qual página estamos
-  const navigate = useNavigate(); // Hook de navegação
-  //const { signOut } = useContext(AuthContext);
+  const { boards, createNewBoard, deleteBoard } = useBoard();
 
-  // Função auxiliar para verificar se o link está ativo
-  const isActive = (path: string) => location.pathname === path ? 'active' : '';
+  const handleAddBoard = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const title = prompt("Nome do novo quadro:");
+    
+    if (title) {
+      createNewBoard(title); // <--- CHAMA A FUNÇÃO GLOBAL
+      const newId = title.toLowerCase().replace(/\s+/g, '-');
+      navigate(`/quadros/${newId}`);
+      onClose(); 
+    }
+  };
 
-  function handleLogout() {
-    //signOut(); // Limpa o usuário do localStorage/Contexto
-    navigate('/'); // Redireciona para o Login
-    onClose(); // Fecha a sidebar (caso esteja no mobile)
-  }
+  const handleLogout = () => {
+    navigate('/'); 
+    onClose(); 
+  };
+
+  const handleDeleteBoard = (e: React.MouseEvent, boardId: string) => {
+    e.preventDefault(); // Evita navegar ao clicar na lixeira
+    e.stopPropagation();
+    
+    deleteBoard(boardId);
+    // Se estivermos no quadro que foi deletado, volta pro operacional
+    if (window.location.pathname.includes(boardId)) {
+        navigate('/quadros/operacional');
+    }
+  };
 
   return (
     <>
-      <div className={`overlay ${isOpen ? 'visible' : ''}`} onClick={onClose} />
-
-      <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
-        
+      <div className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
-          <div className="brand">
-            <img src="/assets/logocafe.png" alt="Bookend" className="logo-img" />
-            <span className="brand-name">Book and coffe</span>
-          </div>
-
-          <button className="btn-close" onClick={onClose}>
-            <X size={24} />
-          </button>
+           <span className="brand-name">Book and Coffee</span>
+           <button className="btn-close" onClick={onClose}><X size={20} weight="bold"/></button>
         </div>
 
-        {/* Links Principais */}
-        <nav className="nav-section">
-          <Link to="/kanban" className={`nav-link ${isActive('/')}`} onClick={onClose}>Início</Link>
-          <Link to="/clientes" className={`nav-link ${isActive('/clientes')}`} onClick={onClose}>Clientes</Link>
-          <Link to="/livros" className={`nav-link ${isActive('/livros')}`} onClick={onClose}>Livros</Link>
-          <Link to="/analises" className={`nav-link ${isActive('/analises')}`} onClick={onClose}>Análises</Link>
-        </nav>
-
-        {/* Linha Divisória */}
-        <div className="divider"></div>
-
-        {/* Configurações */}
-        <nav className="nav-section">
-          <Link to="/config" className="nav-link" onClick={onClose}>Configurações</Link>
-        </nav>
-
-        {/* Linha Divisória */}
-        <div className="divider"></div>
-
-        {/* Quadros */}
-        <div className="quadros-section">
-          <div className="quadros-header">
-            <span>Quadros</span>
-            <button className="btn-add-quadro"><Plus size={16} /></button>
-          </div>
+        <nav className="sidebar-nav">
+          <NavLink to="/inicio" className="nav-link" onClick={onClose}>
+            <House size={20} weight="bold" /> 
+            <span>Início</span>
+          </NavLink>
           
-          {/* Linha Divisória abaixo do título Quadros */}
+          <NavLink to="/clientes" className="nav-link" onClick={onClose}>
+            <Users size={20} weight="bold" /> 
+            <span>Clientes</span>
+          </NavLink>
+          
+          <NavLink to="/livros" className="nav-link" onClick={onClose}>
+            <BookOpen size={20} weight="bold" /> 
+            <span>Livros</span>
+          </NavLink>
+
+          <NavLink to="/emprestimos" className="nav-link" onClick={onClose}>
+            <Money size={20} weight="bold" /> 
+            <span>Empréstimos</span>
+          </NavLink>
+
+          <NavLink to="/analise" className="nav-link" onClick={onClose}>
+            <ChartLine size={20} weight="bold" /> 
+            <span>Análises</span>
+          </NavLink>
+
+          {/* Linha Divisória */}
           <div className="divider"></div>
 
-          <div className="quadros-list">
-            <Link 
-              to="/kanban" 
-              className={`quadro-link ${isActive('/kanban')}`} 
-              onClick={onClose}
-            >
-              Quadro 1
-            </Link>
+          {/* Configurações */}
+          <NavLink to="/config" className="nav-link" onClick={onClose}>
+            <Gear size={20} weight="bold" /> 
+            <span>Configurações</span>
+          </NavLink>
+
+          {/* Linha Divisória */}
+          <div className="divider"></div>
+
+          <div className="boards-section">
+            <div className="section-header">
+              <span>Quadros</span>
+              <button className="btn-add-mini" onClick={handleAddBoard} title="Criar novo quadro">
+                <Plus size={16} weight="bold"/>
+              </button>
+            </div>
+
+            <div className="boards-list">
+              {boards.map(board => (
+                <NavLink 
+                  key={board.id} 
+                  to={`/quadros/${board.id}`}
+                  onClick={onClose}
+                  className={({ isActive }) => isActive ? "board-link active" : "board-link"}
+                >
+                  <div className="board-link-content">
+                    <Kanban size={18} weight={board.id === 'operacional' ? 'fill' : 'regular'} />
+                    <span className="board-name">{board.title}</span>
+                  </div>
+
+                  {/* Botão de Excluir (Só aparece se não for o operacional) */}
+                  {board.id !== 'operacional' && (
+                    <button 
+                      className="btn-delete-board"
+                      onClick={(e) => handleDeleteBoard(e, board.id)}
+                      title="Excluir quadro"
+                    >
+                      <Trash size={16} />
+                    </button>
+                  )}
+                </NavLink>
+              ))}
+            </div>
           </div>
-        </div>
+        </nav>
 
         <div className="sidebar-footer">
-            <div className="divider"></div>
-            
-            <button className="nav-link btn-logout" onClick={handleLogout}>
-                <SignOut size={20} />
-                <span>Sair</span>
-            </button>
+          <button className="btn-logout" onClick={handleLogout}>
+            <SignOut size={20} weight="bold" /> 
+            <span>Sair</span>
+          </button>
         </div>
-
-      </aside>
+      </div>
+      
+      <div className={`overlay ${isOpen ? 'visible' : ''}`} onClick={onClose} />
     </>
   );
 }

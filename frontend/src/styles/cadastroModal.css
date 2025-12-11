@@ -1,20 +1,18 @@
-/* Fundo Escuro (Overlay) */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5); /* Escurece o fundo */
-  z-index: 2000; /* Fica acima da Sidebar */
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* O Card Branco */
 .modal-card {
-  background: white;
+  background: var(--bg-card);
   width: 600px;
   max-width: 90%;
   border-radius: 16px;
@@ -29,15 +27,14 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Título */
 .modal-title {
   text-align: center;
-  font-size: 1.5rem;
+  font-size: var(--font-size-xl);
   font-weight: bold;
   margin-bottom: 20px;
+  color: var(--text-main);
 }
 
-/* --- STEPPER (As bolinhas) --- */
 .stepper {
   display: flex;
   align-items: center;
@@ -46,16 +43,15 @@
   position: relative;
 }
 
-/* Linha cinza atrás das bolinhas */
 .stepper::before {
   content: '';
   position: absolute;
-  top: 15px;
+  top: 15px; /* Metade da altura da bolinha (32px) */
   left: 50%;
   transform: translateX(-50%);
-  width: 100px; /* Tamanho da linha */
+  width: 200px; /* AUMENTADO: Garante que conecte os dois pontos */
   height: 2px;
-  background-color: #E0E0E0;
+  background-color: var(--border-color); /* Usa a variável global */
   z-index: 0;
 }
 
@@ -63,8 +59,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 1; /* Fica acima da linha */
-  background: white;
+  z-index: 1;
+  background: var(--bg-card);
   padding: 0 10px;
 }
 
@@ -72,9 +68,9 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: white;
-  border: 2px solid #E0E0E0;
-  color: #9E9E9E;
+  background-color: var(--bg-card);
+  border: 2px solid var(--border-color);
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,24 +81,22 @@
 
 .step-label {
   font-size: 0.75rem;
-  color: #757575;
+  color: var(--text-secondary);
   text-align: center;
   width: 80px;
 }
 
-/* Estilo do Passo Ativo */
 .step-item.active .step-circle {
   background-color: var(--color-primary-blue);
   border-color: var(--color-primary-blue);
-  color: white;
+  color: var(--color-white);
 }
 
 .step-item.active .step-label {
   font-weight: bold;
-  color: #000;
+  color: var(--text-main);
 }
 
-/* Botões do Rodapé */
 .modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -112,19 +106,54 @@
 
 .btn-outline {
   background: transparent;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
+  padding: 10px 24px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--text-secondary);
+}
+
+.btn-solid {
+  background-color: var(--color-primary-blue);
+  color: var(--color-white);
+  border: none;
   padding: 10px 24px;
   border-radius: 20px;
   cursor: pointer;
   font-weight: bold;
 }
 
-.btn-solid {
-  background-color: var(--color-primary-blue);
-  color: white;
-  border: none;
-  padding: 10px 24px;
-  border-radius: 20px;
-  cursor: pointer;
+/* Header específico para modais de seleção (sem stepper) */
+.selection-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.selection-modal-title {
+  font-size: 1.5rem;
   font-weight: bold;
+  color: var(--text-main);
+  margin: 0;
+}
+
+/* Área de conteúdo do modal de seleção */
+.selection-modal-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Importante para o scroll interno da tabela */
+}
+
+/* Ajuste fino para a tabela dentro do modal */
+.selection-table-wrapper {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  margin-top: 10px;
 }

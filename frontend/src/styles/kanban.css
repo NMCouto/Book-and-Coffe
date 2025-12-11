@@ -1,0 +1,472 @@
+/* Layout do Board */
+.kanban-board {
+  display: flex;
+  gap: 20px;
+  height: calc(100vh - 160px);
+  overflow-x: auto;
+  padding-bottom: 20px;
+  align-items: flex-start;
+}
+
+/* --- COLUNA --- */
+.kanban-column {
+  background-color: var(--bg-body);
+  min-width: 280px;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  box-shadow: 0 2px 4px var(--color-shadow);
+  overflow: visible; 
+  border-radius: 12px;
+}
+
+.column-header {
+  padding: 12px 16px;
+  font-weight: bold;
+  color: var(--text-main);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: transparent;
+  position: relative;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+/* --- SELETOR DE CORES (DENTRO DO MENU) --- */
+.color-picker-section {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.color-picker-label {
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  display: block;
+  text-transform: uppercase;
+}
+
+.color-swatches {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.color-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.color-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Destaque para a cor selecionada */
+.color-btn.selected {
+  border-color: var(--text-main);
+  transform: scale(1.1);
+}
+
+.column-content {
+  padding: 12px;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 50px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* Botão de Opções (...) */
+.btn-column-options {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: inherit; /* Herda a cor do texto do header (branco ou preto) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  opacity: 0.8;
+}
+
+.btn-column-options:hover {
+  background-color: rgba(0,0,0,0.1);
+  opacity: 1;
+}
+
+/* Menu Flutuante (Estilo Trello) */
+.column-options-menu {
+  position: absolute;
+  top: 40px; /* Logo abaixo do header */
+  right: 8px;
+  background-color: white;
+  min-width: 200px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+  border-radius: 8px;
+  z-index: 100; /* Fica acima dos cards */
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  animation: fadeIn 0.1s ease-out;
+}
+
+/* Cabeçalho do Menu */
+.menu-header {
+  padding: 10px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.btn-close-menu {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+}
+
+.btn-close-menu:hover { color: var(--text-main); }
+
+/* Itens do Menu */
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+}
+
+.menu-item {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.1s;
+}
+
+.menu-item:hover {
+  background-color: var(--bg-hover);
+}
+
+.menu-item.danger {
+  color: var(--status-danger-text);
+}
+
+.menu-item.danger:hover {
+  background-color: var(--status-danger-bg);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- CARTÃO --- */
+.kanban-card {
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius-md);
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px var(--color-shadow);
+  cursor: grab;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  border-left: 5px solid transparent; 
+}
+
+.kanban-card:hover {
+  background-color: var(--bg-card);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+
+.kanban-card.dragging {
+  background-color: var(--status-info-bg);
+  transform: rotate(3deg);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* Cores de Prioridade (Mantidas hardcoded pois são específicas) */
+.kanban-card.priority-high { border-left-color: #c30505; }
+.kanban-card.priority-medium { border-left-color: #ffa42c; }
+.kanban-card.priority-low { border-left-color: #5aa15c; }
+
+.card-meta {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+.priority-text {
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* --- BADGE DE ATRASADO --- */
+.card-badge-late {
+  background-color: #D32F2F; /* Vermelho forte */
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+  width: fit-content;
+  margin-bottom: 6px;
+}
+
+/* --- LINHAS DE INFORMAÇÃO (Data/CPF) --- */
+.card-info-rows {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px solid var(--border-color); /* Separador sutil */
+  padding-top: 6px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.info-row svg {
+  color: var(--text-muted);
+}
+
+/* Ajuste na borda lateral para cartões de "Devolução" que são High Priority */
+.kanban-card.priority-high {
+  /* Se tiver isLate (atrasado), a borda vermelha lateral já ajuda a destacar */
+  border-left-color: #D32F2F; 
+}
+
+/* --- BOTÃO ADICIONAR LISTA --- */
+.btn-add-list {
+  min-width: 280px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 2px dashed var(--color-gray-medium);
+  border-radius: 12px;
+  padding: 15px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s;
+  height: fit-content;
+}
+
+.btn-add-list:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-color: var(--text-muted);
+  color: var(--text-main);
+}
+
+.column-counter {
+  font-size: 0.8rem;
+  background-color: rgba(255, 255, 255, 0.3);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.btn-add-card {
+  margin: 8px;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  width: calc(100% - 16px);
+  border-radius: var(--border-radius-sm);
+  transition: all 0.2s;
+}
+
+.btn-add-card:hover {
+  background-color: var(--color-shadow);
+  color: var(--text-main);
+}
+
+.card-title-text {
+  font-size: 0.95rem;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+/* --- FORMULÁRIO DE ADICIONAR LISTA --- */
+
+/* Wrapper que substitui o botão quando ativo */
+.add-list-wrapper {
+  background-color: var(--bg-body); /* Fundo cinza suave */
+  min-width: 280px;
+  width: 280px;
+  border-radius: 12px;
+  padding: 10px;
+  height: fit-content;
+  box-shadow: 0 2px 4px var(--color-shadow);
+  border: 1px solid var(--border-color);
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* O Campo de Texto */
+.input-new-list {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid var(--color-primary-blue); /* Borda azul destaque */
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  background-color: var(--color-white);
+  color: var(--text-main);
+  font-family: inherit;
+}
+
+.input-new-list::placeholder {
+  color: var(--text-muted);
+}
+
+/* Container dos botões (Adicionar e X) */
+.add-list-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Botão Azul "Adicionar Lista" */
+.btn-confirm-add {
+  background-color: var(--color-primary-blue);
+  color: var(--color-white);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  font-size: 0.9rem;
+}
+
+.btn-confirm-add:hover {
+  opacity: 0.9;
+}
+
+/* Botão X para cancelar */
+.btn-cancel-add {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  padding: 6px;
+  border-radius: 4px;
+}
+
+.btn-cancel-add:hover {
+  color: var(--text-main);
+  background-color: var(--bg-hover);
+}
+
+/* --- FORMULÁRIO DE ADICIONAR CARTÃO --- */
+
+.add-card-form {
+  padding: 8px;
+  background-color: transparent; /* Fundo da coluna já é cinza */
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* O Input parece um cartão */
+.input-new-card {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 1px 3px var(--color-shadow);
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  background-color: var(--bg-card); /* Branco */
+  resize: none; /* Remove redimensionamento manual */
+  min-height: 60px; /* Altura inicial de um cartão */
+  outline: 2px solid transparent;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.input-new-card:focus {
+  outline-color: var(--color-primary-blue);
+}
+
+.input-new-card::placeholder {
+  color: var(--text-muted);
+}
+
+/* Botões (Reutilizando classes do Add List, mas garantindo especificidade se precisar) */
+.add-card-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --- INPUT DE RENOMEAR COLUNA --- */
+.input-rename-column {
+  width: 85%;
+  font-family: inherit;
+  font-size: 1rem; /* Mesmo tamanho do título */
+  font-weight: bold;
+  color: var(--text-main);
+  background-color: var(--color-white);
+  border: 2px solid var(--color-primary-blue);
+  border-radius: var(--border-radius-sm);
+  padding: 4px 8px;
+  margin-right: 8px; /* Espaço para não colar no menu */
+  outline: none;
+  cursor: text;
+}
+
+/* Ajuste para o span (título) ter o cursor correto */
+.column-title-text {
+  flex: 1;
+  cursor: pointer;
+  padding: 6px 4px; /* Área de clique um pouco maior */
+  border-radius: 4px;
+  border: 2px solid transparent; /* Para evitar pulo visual ao trocar p/ input */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.column-title-text:hover {
+  background-color: rgba(0,0,0,0.05); /* Feedback visual de que é clicável */
+}

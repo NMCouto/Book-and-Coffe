@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import { PencilSimple, Trash, Faders } from 'phosphor-react';
 import '../styles/paginasTabelas.css'; 
 
@@ -7,12 +6,14 @@ import '../styles/paginasTabelas.css';
 import { Pagination } from '../components/ui/Paginacao';
 import { GenericTable } from '../components/ui/GenericTable';
 import { GenericToolbar } from '../components/ui/GenericToolbar';
+import { useAlert } from '../contexts/AlertContext';
 
 // Tipos e Utilitários
 import type { AdvancedFilterState, LivroView, ColumnDef } from '../types';
 import { parseBookDate } from '../utils/validator';
 
 // --- Específicos ---
+import { TopNavigation } from '../components/ui/TopNavigation';
 import { LivrosService } from '../services/livrosService';
 import { CadastroLivro } from '../components/cadastro_livros';
 import { ModalFiltrarLivro } from '../components/filtrarLivro';
@@ -27,6 +28,7 @@ export function Livros() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState<'todos' | 'disponiveis' | 'indisponiveis'>('todos');
+  const { showAlert } = useAlert();
   
   const [activeFilters, setActiveFilters] = useState<AdvancedFilterState>({
     genres: [], authors: [], publishers: [], startDate: null, endDate: null
@@ -45,13 +47,19 @@ export function Livros() {
     }
   }
 
-  async function handleDelete(id: string) {
-    if (confirm("Tem certeza que deseja excluir este livro?")) {
-       await LivrosService.delete(id);
-       loadLivros(); 
-    }
-  }
+  const handleDelete = async (id: string) => {
+    const confirmado = await showAlert({
+        title: 'Excluir Livro',
+        message: 'Tem certeza que deseja excluir este livro do acervo?',
+        confirmText: 'Sim',
+        cancelText: 'Cancelar'
+    });
 
+    if (confirmado) {
+        await LivrosService.delete(id);
+        loadLivros();
+    }
+  };
   useEffect(() => { loadLivros(); }, []);
 
   // --- DEFINIÇÃO DAS COLUNAS (Especialização da GenericTable) ---
@@ -132,10 +140,7 @@ export function Livros() {
   return (
     <div className="page-container">
       
-      <div className="tabs-container">
-        <Link to="/clientes" className="tab-button">Clientes</Link>
-        <Link to="/livros" className="tab-button active">Livros</Link>
-      </div>
+      <TopNavigation />
 
       {/* TOOLBAR GENÉRICA + INJEÇÃO DE FILTROS ESPECÍFICOS */}
       <GenericToolbar

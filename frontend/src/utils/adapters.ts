@@ -1,4 +1,4 @@
-import type { LivroDB, LivroView, ClienteDB, ClienteView } from '../types';
+import type { LivroDB, LivroView, ClienteDB, ClienteView, EmprestimoDB, EmprestimoView } from '../types';
 
 // Função auxiliar para formatar data (ISO -> DD/MM/AAAA)
 function formatDate(dateStr: string | undefined): string {
@@ -46,5 +46,23 @@ export function adaptCliente(cliente: ClienteDB): ClienteView {
     telefone: cliente.Telefone, 
     ativo: cliente.ativo ?? true, // Se não vier nada, assume ativo
     emprestimosAtivos: cliente.emprestimosAtivos || 0
+  };
+}
+
+export function adaptEmprestimo(data: EmprestimoDB): EmprestimoView {
+  const hoje = new Date();
+  const devolucao = new Date(data.data_devolucao);
+  
+  // Lógica simples de status
+  const isAtrasado = hoje > devolucao;
+
+  return {
+    id: data._id,
+    titulo: data.titulo,
+    isbn: String(data.isbn),
+    cpfCliente: String(data.cpf_emprestimo),
+    dataEmissao: data.data_emissao,
+    dataDevolucao: data.data_devolucao,
+    status: isAtrasado ? 'atrasado' : 'em_dia'
   };
 }

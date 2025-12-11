@@ -1,0 +1,35 @@
+/* Container da barra de navegação */
+.top-nav-container {
+  display: flex;
+  width: 100%;
+  background-color: var(--color-gray-medium); /* Era #e0e0e0 */
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+/* Estilo base de cada aba */
+.nav-tab {
+  flex: 1;
+  padding: 12px 0;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: var(--font-size-md);
+  color: var(--text-secondary);
+  background-color: var(--border-color); /* Fundo Inativo */
+  transition: all 0.2s;
+  border: none;
+  outline: none;
+}
+
+.nav-tab:hover {
+  background-color: var(--color-gray-light); /* Mais claro */
+  color: var(--text-main);
+}
+
+/* Estilo da aba ATIVA */
+.nav-tab.active {
+  background-color: var(--color-primary-blue);
+  color: var(--color-white);
+}
