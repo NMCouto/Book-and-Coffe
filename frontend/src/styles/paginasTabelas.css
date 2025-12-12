@@ -245,6 +245,8 @@
   background-color: var(--bg-hover);
 }
 
+.status-neutral { background: var(--color-white); color: var(--status-info-bg); }
+
 /* =========================================
    RODAPÉ E PAGINAÇÃO
    ========================================= */

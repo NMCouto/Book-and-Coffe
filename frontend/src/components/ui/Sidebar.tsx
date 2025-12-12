@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom'; 
 import { House, Users, X,BookOpen, Money, Plus, SignOut, Kanban, Trash, Gear, ChartLine } from 'phosphor-react';
 import { useBoard } from '../../contexts/BoardContext.tsx';
+import { NewBoardModal } from '../modals/NewBoardModal.tsx';
 import '../../styles/components/Sidebar.css';
 
 // Adicionei onClose nas props para poder fechar ao navegar
@@ -8,17 +10,12 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
   const navigate = useNavigate();
 
   const { boards, createNewBoard, deleteBoard } = useBoard();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleAddBoard = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const title = prompt("Nome do novo quadro:");
-    
-    if (title) {
-      createNewBoard(title); // <--- CHAMA A FUNÇÃO GLOBAL
-      const newId = title.toLowerCase().replace(/\s+/g, '-');
-      navigate(`/quadros/${newId}`);
-      onClose(); 
-    }
+  const handleCreateBoard = async (title: string) => {
+    await createNewBoard(title);
+    // O modal fecha sozinho dentro do componente NewBoardModal ao chamar onClose, 
+    // ou você pode fechar aqui se preferir mudar a lógica.
   };
 
   const handleLogout = () => {
@@ -86,7 +83,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           <div className="boards-section">
             <div className="section-header">
               <span>Quadros</span>
-              <button className="btn-add-mini" onClick={handleAddBoard} title="Criar novo quadro">
+              <button className="btn-add-mini" onClick={() => setIsModalOpen(true)} title="Criar novo quadro">
                 <Plus size={16} weight="bold"/>
               </button>
             </div>
@@ -129,6 +126,12 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
       </div>
       
       <div className={`overlay ${isOpen ? 'visible' : ''}`} onClick={onClose} />
+
+      <NewBoardModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleCreateBoard}
+      />
     </>
   );
 }
