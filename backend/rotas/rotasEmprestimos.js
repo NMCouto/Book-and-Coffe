@@ -41,21 +41,20 @@ export default function registrarRotasEmprestimos(app){
         }
     });
 
-     app.get("/emprestimos/devolucaoHoje", async (req, res) => {
+     app.get("/emprestimos/atrasados", async (req, res) => {
         try {
-            const inicio = new Date();
-            inicio.setHours(0, 0, 0, 0);
+            const fimHoje = new Date();
+            fimHoje.setHours(23, 59, 59, 999);
 
-            const fim = new Date();
-            fim.setHours(23, 59, 59, 999);
-
-            const emprestimosHoje = await emprestimo.find({
-                data_devolucao: { $gte: inicio, $lte: fim }
+            // Busca: Data devolução é menor ou igual a hoje E Status não é "Devolvido"
+            const pendentes = await emprestimo.find({
+                data_devolucao: { $lte: fimHoje },
+                status: { $ne: 'Devolvido' } // Ignora os já finalizados
             });
 
-            res.json(emprestimosHoje);
+            res.json(pendentes);
         } catch (error) {
-            res.send(error);
+            res.status(500).send(error);
         }
     });
 

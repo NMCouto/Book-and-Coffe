@@ -1,51 +1,152 @@
 import { useState, useEffect, useMemo } from 'react';
-import { PencilSimple, Trash, Faders } from 'phosphor-react';
-import '../styles/paginasTabelas.css'; 
-
-// --- Componentes Genéricos ---
-import { Pagination } from '../components/ui/Paginacao';
+import { Trash, PencilSimple, Funnel } from 'phosphor-react';
+import { TopNavigation } from '../components/ui/TopNavigation';
 import { GenericTable } from '../components/ui/GenericTable';
 import { GenericToolbar } from '../components/ui/GenericToolbar';
+import { Pagination } from '../components/ui/Paginacao';
 import { useAlert } from '../contexts/AlertContext';
-
-// Tipos e Utilitários
-import type { AdvancedFilterState, LivroView, ColumnDef } from '../types';
-import { parseBookDate } from '../utils/validator';
-
-// --- Específicos ---
-import { TopNavigation } from '../components/ui/TopNavigation';
-import { LivrosService } from '../services/livrosService';
 import { CadastroLivro } from '../components/cadastro_livros';
-import { ModalFiltrarLivro } from '../components/filtrarLivro';
+import { ModalFiltrarLivro } from '../components/filtrarLivro'; // Importando seu modal existente
 
-const ITEMS_PER_PAGE = 11;
+// Services & Types
+import { LivrosService } from '../services/livrosService';
+import type { LivroView, ColumnDef, AdvancedFilterState } from '../types'; // Certifique-se que AdvancedFilterState está no types ou defina aqui
+
+import '../styles/paginasTabelas.css';
+import '../styles/emprestimos.css'; 
+
+
+type SimpleFilterType = 'todos' | 'disponivel' | 'indisponivel';
 
 export function Livros() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [livrosData, setLivrosData] = useState<LivroView[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filterStatus, setFilterStatus] = useState<'todos' | 'disponiveis' | 'indisponiveis'>('todos');
   const { showAlert } = useAlert();
   
-  const [activeFilters, setActiveFilters] = useState<AdvancedFilterState>({
-    genres: [], authors: [], publishers: [], startDate: null, endDate: null
+  const [data, setData] = useState<LivroView[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // --- ESTADOS DE FILTRO E MODAIS ---
+  const [simpleFilter, setSimpleFilter] = useState<SimpleFilterType>('todos');
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilterState>({
+    genres: [],
+    authors: [],
+    publishers: [],
+    startDate: null,
+    endDate: null
   });
 
-  // --- SERVIÇOS (Busca e Delete) ---
-  async function loadLivros() {
+  // --- ESTADOS DE EDIÇÃO/CRIAÇÃO ---
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingBook, setEditingBook] = useState<LivroView | null>(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 11;
+
+  useEffect(() => { carregar(); }, []);
+
+  const carregar = async () => {
+    setIsLoading(true);
+    const res = await LivrosService.getAll();
+    setData(res);
+    setIsLoading(false);
+  };
+
+  // --- LÓGICA DE FILTRAGEM COMPLETA ---
+  const filteredData = useMemo(() => {
+    return data.filter(livro => {
+      // 1. Busca textual (Título ou ISBN)
+      const term = searchTerm.toLowerCase();
+      const matchesSearch = 
+        livro.titulo.toLowerCase().includes(term) || livro.autor.toLowerCase().includes(term) ||
+        livro.isbn.includes(term);
+
+      if (!matchesSearch) return false;
+
+      // 2. Filtro Simples (Abas: Disponível/Indisponível)
+      if (simpleFilter === 'disponivel' && !livro.disponivel) return false;
+      if (simpleFilter === 'indisponivel' && livro.disponivel) return false;
+
+      // 3. Filtros Avançados (Modal)
+      const { genres, authors, publishers, startDate, endDate } = advancedFilters;
+
+      // Gênero
+      if (genres.length > 0) {
+        const bookGenre = (livro.genero || '').toLowerCase();
+        // Verifica se ALGUM (some) dos gêneros selecionados está INCLUÍDO (includes) no gênero do livro
+        const hasMatch = genres.some(selectedGenre => 
+            bookGenre.includes(selectedGenre.toLowerCase())
+        );
+        
+        if (!hasMatch) return false;
+      }
+      
+      // Autor
+      if (authors.length > 0 && !authors.includes(livro.autor)) return false;
+      
+      // Editora (Se seu LivroView tiver editora, senão ignore ou ajuste)
+      if (publishers.length > 0 && !publishers.includes((livro as any).editora || '')) return false;
+
+      // Datas
+      if (startDate || endDate) {
+        // Assume que data_lancamento existe no objeto vindo do banco, mesmo que não esteja na View padrão
+        const rawDate = (livro as any).data_lancamento; 
+        const bookDate = rawDate ? new Date(rawDate) : null;
+        
+        if (!bookDate) return false;
+        if (startDate && bookDate < startDate) return false;
+        if (endDate && bookDate > endDate) return false;
+      }
+
+      return true;
+    });
+  }, [data, searchTerm, simpleFilter, advancedFilters]);
+
+  // Paginação
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const currentData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  // --- NAVEGAÇÃO POR TECLADO ---
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Só navega se não tiver modal aberto
+      if (!isModalOpen && !isFilterModalOpen) {
+        if (e.key === 'ArrowLeft') {
+            setCurrentPage(p => Math.max(1, p - 1));
+        } else if (e.key === 'ArrowRight') {
+            setCurrentPage(p => Math.min(totalPages, p + 1));
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [totalPages, isModalOpen, isFilterModalOpen]);
+
+  // --- AÇÕES CRUD ---
+  const handleNew = () => {
+    setEditingBook(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (livro: LivroView) => {
+    setEditingBook(livro);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveLivro = async (dados: any) => {
     try {
-      setIsLoading(true);
-      const dados = await LivrosService.getAll();
-      setLivrosData(dados);
+        if (editingBook) {
+            await LivrosService.update(editingBook.id, dados);
+        } else {
+            await LivrosService.create(dados);
+        }
+        await carregar();
+        setIsModalOpen(false);
+        setEditingBook(null);
     } catch (error) {
-      alert("Erro ao carregar livros.");
-    } finally {
-      setIsLoading(false);
+        console.error("Erro ao salvar livro", error);
     }
-  }
+  };
 
   const handleDelete = async (id: string) => {
     const confirmado = await showAlert({
@@ -57,144 +158,114 @@ export function Livros() {
 
     if (confirmado) {
         await LivrosService.delete(id);
-        loadLivros();
+        carregar();
     }
   };
-  useEffect(() => { loadLivros(); }, []);
 
-  // --- DEFINIÇÃO DAS COLUNAS (Especialização da GenericTable) ---
-  const columns = useMemo<ColumnDef<LivroView>[]>(() => [
-    { header: 'Título', accessor: 'titulo' },
-    { header: 'ISBN', accessor: 'isbn', className: 'text-center' },
-    { header: 'Gênero', accessor: 'genero', className: 'text-center' },
+  // Colunas
+  const columns: ColumnDef<LivroView>[] = [
+    { header: 'Título', accessor: 'titulo', className: 'text-left' },
+    { header: 'Autor', accessor: 'autor', className: 'text-left' },
+    { header: 'Gênero', accessor: 'genero', className: 'text-left' },
+    { header: 'ISBN', accessor: 'isbn', className: 'text-left' },
     { 
-      header: 'Ações', 
-      className: 'text-center',
-      render: (livro) => (
-        <div className="action-cell">
-           <button className="icon-btn edit" title="Editar"><PencilSimple size={20} /></button>
-           <button className="icon-btn delete" onClick={() => handleDelete(livro.id)} title="Excluir">
-             <Trash size={20} />
-           </button>
+        header: 'Disponível', 
+        className: 'text-center',
+        render: (item) => item.disponivel 
+            ? <span style={{color:'var(--status-success-text)', fontWeight:'bold'}}>Sim</span> 
+            : <span style={{color:'var(--status-danger-text)'}}>Não</span>
+    },
+    {
+      header: 'Ações',
+      className: 'action-cell',
+      render: (item) => (
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+          <button className="icon-btn edit" title="Editar" onClick={() => handleEdit(item)}>
+            <PencilSimple size={20} />
+          </button>
+          <button className="icon-btn delete" title="Excluir" onClick={() => handleDelete(item.id)}>
+            <Trash size={20} />
+          </button>
         </div>
       )
     }
-  ], []);
-
-  // --- LÓGICA DE FILTRAGEM ---
-  const livrosFiltrados = livrosData.filter((livro) => {
-    // A) Busca Texto
-    const searchLower = searchTerm.toLowerCase();
-    const matchSearch = livro.titulo.toLowerCase().includes(searchLower) || livro.isbn.includes(searchTerm);
-
-    // B) Status
-    let matchStatus = true;
-    if (filterStatus === 'disponiveis') matchStatus = livro.disponivel === true;
-    if (filterStatus === 'indisponiveis') matchStatus = livro.disponivel === false;
-
-    // C) Filtros Avançados
-    const generoLivro = livro.genero || 'NA';
-    const autorLivro = livro.autor || 'NA';
-    const editoraLivro = livro.editora || 'NA';
-
-    const matchGenre = activeFilters.genres.length === 0 || activeFilters.genres.includes(generoLivro);
-    const matchAutor = activeFilters.authors.length === 0 || activeFilters.authors.includes(autorLivro);
-    const matchEditora = activeFilters.publishers.length === 0 || activeFilters.publishers.includes(editoraLivro);
-
-    // D) Datas
-    let matchData = true;
-    if (activeFilters.startDate || activeFilters.endDate) {
-      const bookDate = parseBookDate(livro.data);
-      if (!bookDate) {
-         matchData = false;
-      } else {
-         if (activeFilters.startDate && bookDate < activeFilters.startDate) matchData = false;
-         if (activeFilters.endDate && bookDate > activeFilters.endDate) matchData = false;
-      }
-    }
-
-    return matchSearch && matchStatus && matchGenre && matchAutor && matchEditora && matchData;
-  });
-
-  // --- PAGINAÇÃO E CONTROLES ---
-  const totalPages = Math.ceil(livrosFiltrados.length / ITEMS_PER_PAGE);
-  const currentData = livrosFiltrados.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE, 
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  useEffect(() => { setCurrentPage(1); }, [searchTerm, filterStatus, activeFilters]);
-
-  // Teclado
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement).tagName === 'INPUT') return;
-      if (e.key === 'ArrowLeft') setCurrentPage(p => Math.max(p - 1, 1));
-      if (e.key === 'ArrowRight') setCurrentPage(p => Math.min(p + 1, totalPages));
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [totalPages]);
-
+  ];
 
   return (
     <div className="page-container">
-      
       <TopNavigation />
 
-      {/* TOOLBAR GENÉRICA + INJEÇÃO DE FILTROS ESPECÍFICOS */}
-      <GenericToolbar
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        onNewItem={() => setIsModalOpen(true)}
-        newItemLabel="Novo Livro"
+      <GenericToolbar 
+        searchTerm={searchTerm} 
+        onSearchChange={(t) => { setSearchTerm(t); setCurrentPage(1); }} 
+        newItemLabel="Novo Livro" 
+        onNewItem={handleNew} 
       >
-         {/* Botão de Filtro Avançado */}
-         <button className="btn-filter" onClick={() => setIsFilterOpen(true)}>
-             <Faders size={18} weight="bold" />
-             Filtrar
-         </button>
+        {/* BOTÕES DE FILTRO SIMPLES + BOTÃO FILTRO AVANÇADO */}
+        <div style={{display: 'flex', alignItems: 'center', gap: '15px'}}>
+            <div className="filter-tabs-group">
+                <button 
+                    className={`filter-tab-btn ${simpleFilter === 'todos' ? 'active' : ''}`} 
+                    onClick={() => { setSimpleFilter('todos'); setCurrentPage(1); }}
+                >
+                    Todos
+                </button>
+                <button 
+                    className={`filter-tab-btn ${simpleFilter === 'disponivel' ? 'active' : ''}`} 
+                    onClick={() => { setSimpleFilter('disponivel'); setCurrentPage(1); }}
+                >
+                    Disponíveis
+                </button>
+                <button 
+                    className={`filter-tab-btn ${simpleFilter === 'indisponivel' ? 'active' : ''}`} 
+                    onClick={() => { setSimpleFilter('indisponivel'); setCurrentPage(1); }}
+                >
+                    Indisponíveis
+                </button>
+            </div>
 
-         {/* Botões de Status */}
-         <div className="status-toggle-group">
-            <button className={`status-toggle-btn ${filterStatus === 'todos' ? 'active' : ''}`} onClick={() => setFilterStatus('todos')}>Todos</button>
-            <button className={`status-toggle-btn ${filterStatus === 'disponiveis' ? 'active' : ''}`} onClick={() => setFilterStatus('disponiveis')}>Disponíveis</button>
-            <button className={`status-toggle-btn ${filterStatus === 'indisponiveis' ? 'active' : ''}`} onClick={() => setFilterStatus('indisponiveis')}>Indisponíveis</button>
-         </div>
+            {/* Botão do Filtro Avançado */}
+            <button 
+                className='btn-filter'
+                onClick={() => setIsFilterModalOpen(true)}
+                title="Filtros Avançados"
+            >
+                <Funnel size={20} weight={Object.values(advancedFilters).some(v => Array.isArray(v) ? v.length > 0 : v) ? "fill" : "regular"} />
+            </button>
+        </div>
       </GenericToolbar>
 
       <div className="table-container">
-        {/* TABELA GENÉRICA */}
         <GenericTable 
-          data={currentData}
-          columns={columns}
-          isLoading={isLoading}
-          itemsPerPage={ITEMS_PER_PAGE}
-          emptyMessage="Nenhum livro encontrado."
+            data={currentData} 
+            columns={columns} 
+            isLoading={isLoading} 
+            itemsPerPage={itemsPerPage}
+            emptyMessage="Nenhum livro encontrado."
         />
+      </div>
 
-        {/* PAGINAÇÃO */}
-        <Pagination 
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
-     </div>
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
 
-      {/* MODAIS */}
-      <CadastroLivro 
-        isOpen={isModalOpen} 
-        onClose={() => { setIsModalOpen(false); loadLivros(); }} 
+      {/* MODAL DE CADASTRO/EDIÇÃO */}
+      <CadastroLivro
+        isOpen={isModalOpen}
+        onClose={() => { setIsModalOpen(false); setEditingBook(null); }}
+        onSave={handleSaveLivro}
+        livroParaEditar={editingBook}
       />
 
+      {/* MODAL DE FILTRO AVANÇADO */}
       <ModalFiltrarLivro 
-        isOpen={isFilterOpen} 
-        onClose={() => setIsFilterOpen(false)} 
-        livrosTotais={livrosData} // Passa dados brutos para contagem preview
-        onConfirm={setActiveFilters}
-        currentFilters={activeFilters} 
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        livrosTotais={data} // Passa todos os dados para contagem
+        onConfirm={(filters) => {
+            setAdvancedFilters(filters);
+            setCurrentPage(1);
+        }}
+        currentFilters={advancedFilters}
       />
-        
     </div>
   );
 }

@@ -72,12 +72,21 @@ export const adaptCard = (data: any): CardView => {
 
 // --- AUXILIARES ---
 
-function calcularStatus(dataDevolucao: string | Date, statusBackend?: string): 'em_dia' | 'atrasado' {
-  // Se o backend retornou explicitamente "Atrasado", confiamos nele
-  if (statusBackend === 'Atrasado') return 'atrasado';
+// Atualize esta função no final do arquivo
+function calcularStatus(dataDevolucao: string | Date, statusBackend?: string): 'em_dia' | 'atrasado' | 'pendente' | 'devolvido' {
+  // Normaliza o que vem do backend para minúsculo
+  const statusNormalizado = statusBackend?.toLowerCase() || '';
+
+  // Se for explicitamente devolvido, respeita
+  if (statusNormalizado === 'devolvido') return 'devolvido';
   
+  // Se for explicitamente atrasado (marcado manual), respeita
+  if (statusNormalizado === 'atrasado') return 'atrasado';
+
+  // Se não tiver data, assume em dia
   if (!dataDevolucao) return 'em_dia';
   
+  // Cálculo automático baseado na data
   const hoje = new Date();
   const devolucao = new Date(dataDevolucao);
   

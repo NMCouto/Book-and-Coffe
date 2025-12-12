@@ -1,18 +1,14 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { DropResult } from '@hello-pangea/dnd';
 import type { BoardView, KanbanColumnData, CardView, ColumnId } from '../types';
-
-// Função auxiliar para gerar data formatada (apenas para o mock)
-const getFutureDate = (days: number) => {
-  const date = new Date();
-  date.setDate(date.getDate() + days);
-  return date.toLocaleDateString('pt-BR');
-};
+import { BoardsService } from '../services/boardsService';
+import { EmprestimosService } from '../services/emprestimosService';
+import { useAuth } from './AuthContext';
 
 interface BoardContextType {
   boards: BoardView[];
-  createNewBoard: (title: string) => void;
+  createNewBoard: (title: string) => Promise<void>;
   deleteBoard: (boardId: string) => void;
   moveCard: (boardId: string, result: DropResult) => void;
   updateCard: (boardId: string, columnId: string, cardId: string, updates: Partial<CardView>) => void;
@@ -26,85 +22,121 @@ interface BoardContextType {
 
 const BoardContext = createContext({} as BoardContextType);
 
-// Dados Iniciais 
-const INITIAL_BOARDS: BoardView[] = [
-  {
-    id: 'operacional',
-    title: 'Operacional (Padrão)',
-    columns: [
-      { 
-        id: 'devolucoes', 
-        title: 'Devoluções', 
-        color: '#D32F2F', // Vermelho
-        cards: [
-          { 
-            id: 'dev-1', 
-            title: 'Sapiens: Uma breve história da humanidade', 
-            priority: 'high', 
-            columnId: 'devolucoes',
-            dueDate: '05/12/2025', // Data passada simulada
-            cpf: '123.456.789-09',
-            isLate: true
-          },
-          { 
-            id: 'dev-2', 
-            title: 'O Poder do Hábito', 
-            priority: 'high', 
-            columnId: 'devolucoes',
-            dueDate: '02/12/2025',
-            cpf: '998.877.665-50',
-            isLate: true
-          },
-          { 
-            id: 'dev-3', 
-            title: 'Cem Anos de Solidão', 
-            priority: 'medium', 
-            columnId: 'devolucoes',
-            dueDate: getFutureDate(3), // Daqui a 3 dias (Próximo)
-            cpf: '258.147.369-11',
-            isLate: false
-          }
-        ]
-      },
-      { 
-        id: 'pendencias', 
-        title: 'Pendências',
-        color: '#F57C00', // Laranja 
-        cards: [
-          { id: 'task-1', title: 'Comprar prateleira nova', priority: 'medium', columnId: 'pendencias' },
-          { id: 'task-2', title: 'Comprar livros novos', priority: 'high', columnId: 'pendencias' }
-        ]
-      },
-      { id: 'todo', title: 'A fazer', color: '#0855a1ff', cards: [] }, // Azul
-      { id: 'doing', title: 'Em andamento', color: '#448AFF', cards: [] }, // Azul Claro
-      { id: 'done', title: 'Concluído', color: '#388E3C', cards: [] } // Verde
-    ]
-  }
-];
-
 export function BoardProvider({ children }: { children: ReactNode }) {
-  const [boards, setBoards] = useState<BoardView[]>(INITIAL_BOARDS);
+  const { user } = useAuth(); // Pega o usuário logado
+  const [boards, setBoards] = useState<BoardView[]>([]);
 
-  const createNewBoard = (title: string) => {
-    const newId = title.toLowerCase().replace(/\s+/g, '-');
-    const newBoard: BoardView = {
-      id: newId,
-      title,
-      columns: [
-        { id: 'todo', title: 'A Fazer', cards: [] },
-        { id: 'doing', title: 'Em Progresso', cards: [] },
-        { id: 'done', title: 'Concluído', cards: [] }
-      ]
-    };
-    setBoards([...boards, newBoard]);
+  // 1. CARREGAR DADOS AO INICIAR
+  useEffect(() => {
+    if (user) {
+      carregarDadosIniciais();
+    }
+  }, [user]);
+
+  const carregarDadosIniciais = async () => {
+    if (!user) return;
+
+    try {
+      // Busca Quadros e Empréstimos Atrasados em paralelo
+      const [listaQuadros, listaAtrasados] = await Promise.all([
+        BoardsService.getAll(user.username),
+        EmprestimosService.getAtrasados()
+      ]);
+
+      // Processa a injeção dos cartões
+      const quadrosAtualizados = listaQuadros.map(board => {
+        // Só mexe no quadro 'operacional'
+        if (board.id === 'operacional') {
+          
+          // Encontra a coluna de devoluções (pelo ID 'devolucoes' ou título)
+          const colIndex = board.columns.findIndex(c => c.id === 'devolucoes' || c.title.toLowerCase().includes('devoluções'));
+          
+          if (colIndex === -1) return board; // Se não achar a coluna, retorna igual
+
+          const colunaDevolucoes = { ...board.columns[colIndex] };
+          
+          // CRIAÇÃO DOS CARTÕES AUTOMÁTICOS
+          listaAtrasados.forEach(emp => {
+            // Verifica se já existe um card para esse empréstimo para não duplicar
+            // Usamos um prefixo 'loan-' no ID para identificar
+            const cardId = `loan-${emp.id}`;
+            const jaExiste = colunaDevolucoes.cards.some(c => c.id === cardId);
+
+            if (!jaExiste) {
+              colunaDevolucoes.cards.push({
+                id: cardId,
+                title: emp.titulo, // Título do Livro
+                priority: 'high',  // Atrasado é prioridade alta
+                columnId: colunaDevolucoes.id,
+                
+                // Dados Extras solicitados:
+                cpf: emp.cpfCliente,
+                dueDate: emp.dataDevolucao, // Data Vencimento
+                isLate: true,
+                comment: `Empréstimo atrasado/vencendo. ISBN: ${emp.isbn}`
+              });
+            }
+          });
+
+          // Atualiza a coluna no quadro
+          const novasColunas = [...board.columns];
+          novasColunas[colIndex] = colunaDevolucoes;
+          
+          return { ...board, columns: novasColunas };
+        }
+        return board;
+      });
+
+      setBoards(quadrosAtualizados);
+
+    } catch (error) {
+      console.error("Erro ao carregar dados do Kanban", error);
+    }
   };
 
+  // --- FUNÇÃO AUXILIAR PARA SALVAR NO BANCO ---
+  // Atualiza o estado visualmente E chama o serviço para persistir
+  const updateBoardState = (newBoards: BoardView[], changedBoardId: string) => {
+    setBoards(newBoards); // Atualiza Tela
+    
+    const changedBoard = newBoards.find(b => b.id === changedBoardId);
+    if (changedBoard) {
+      // Salva no Backend (Fire and forget - não bloqueia a tela)
+      BoardsService.update(changedBoard);
+    }
+  };
+
+  // --- CRIAR QUADRO ---
+  const createNewBoard = async (title: string) => {
+    if (!user) return;
+    try {
+        // Chama o serviço para criar no banco e receber o objeto com ID gerado
+        const newBoard = await BoardsService.create(title, user.username);
+        setBoards(prev => [...prev, newBoard]);
+    } catch (error) {
+        console.error("Erro ao criar quadro", error);
+    }
+  };
+
+  // --- EXCLUIR QUADRO ---
+  const deleteBoard = (boardId: string) => {
+    if (boardId === 'operacional') {
+      alert("O quadro Operacional é padrão do sistema e não pode ser excluído.");
+      return;
+    }
+    if (confirm("Tem certeza que deseja excluir este quadro permanentemente?")) {
+      setBoards(prev => prev.filter(b => b.id !== boardId)); // Otimista
+      BoardsService.delete(boardId); // Backend
+    }
+  };
+
+  // --- ADICIONAR CARTÃO ---
   const addCardToBoard = (boardId: string, columnId: string, title: string) => {
-    setBoards(prevBoards => prevBoards.map(board => {
+    const newBoards = boards.map(board => {
       if (board.id !== boardId) return board;
 
       const newCard: CardView = {
-        id: Math.random().toString(),
+        id: Math.random().toString(36).substr(2, 9), // ID temporário, idealmente o back geraria
         title,
         priority: 'low',
         columnId: columnId as ColumnId
@@ -116,19 +148,61 @@ export function BoardProvider({ children }: { children: ReactNode }) {
           col.id === columnId ? { ...col, cards: [...col.cards, newCard] } : col
         )
       };
-    }));
+    });
+    
+    updateBoardState(newBoards, boardId);
   };
 
+  // --- MOVER CARTÃO (DRAG AND DROP) ---
+  const moveCard = (boardId: string, result: DropResult) => {
+    const { source, destination } = result;
+    if (!destination) return;
+    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+
+    // Calculamos o novo estado
+    const newBoards = [...boards];
+    const boardIndex = newBoards.findIndex(b => b.id === boardId);
+    if (boardIndex === -1) return;
+
+    const board = { ...newBoards[boardIndex] };
+    const columns = [...board.columns];
+
+    const sourceColIndex = columns.findIndex(col => col.id === source.droppableId);
+    const destColIndex = columns.findIndex(col => col.id === destination.droppableId);
+
+    const sourceCol = { ...columns[sourceColIndex], cards: [...columns[sourceColIndex].cards] };
+    const destCol = { ...columns[destColIndex], cards: [...columns[destColIndex].cards] };
+
+    const [movedCard] = sourceCol.cards.splice(source.index, 1);
+
+    if (sourceCol.id === destCol.id) {
+      sourceCol.cards.splice(destination.index, 0, movedCard);
+      columns[sourceColIndex] = sourceCol;
+    } else {
+      const updatedCard = { ...movedCard, columnId: destCol.id as ColumnId };
+      destCol.cards.splice(destination.index, 0, updatedCard);
+      columns[sourceColIndex] = sourceCol;
+      columns[destColIndex] = destCol;
+    }
+
+    board.columns = columns;
+    newBoards[boardIndex] = board;
+
+    // Atualiza Contexto e Banco
+    updateBoardState(newBoards, boardId);
+  };
+
+  // --- ATUALIZAR CARTÃO ---
   const updateCard = (boardId: string, columnId: string, cardId: string, updates: Partial<CardView>) => {
-    setBoards(prev => prev.map(board => {
+    const newBoards = boards.map(board => {
       if (board.id !== boardId) return board;
 
       const newColumns = board.columns.map(col => {
-        if (col.id !== columnId) return col;
+        // Se columnId vier undefined (às vezes acontece), varre todas. Se vier, otimiza.
+        if (columnId && col.id !== columnId) return col;
 
         const newCards = col.cards.map(card => {
           if (card.id !== cardId) return card;
-          // Mescla os dados antigos com as atualizações (titulo, prioridade, comentario)
           return { ...card, ...updates };
         });
 
@@ -136,117 +210,89 @@ export function BoardProvider({ children }: { children: ReactNode }) {
       });
 
       return { ...board, columns: newColumns };
-    }));
+    });
+
+    updateBoardState(newBoards, boardId);
   };
 
+  // --- DELETAR CARTÃO ---
+  const deleteCard = (boardId: string, cardId: string) => {
+    const newBoards = boards.map(board => {
+      if (board.id !== boardId) return board;
+
+      const newColumns = board.columns.map(col => ({
+        ...col,
+        cards: col.cards.filter(c => c.id !== cardId)
+      }));
+
+      return { ...board, columns: newColumns };
+    });
+
+    updateBoardState(newBoards, boardId);
+  };
+
+  // --- ADICIONAR COLUNA ---
   const addColumnToBoard = (boardId: string, title: string) => {
-     setBoards(prevBoards => prevBoards.map(board => {
+     const newBoards = boards.map(board => {
         if (board.id !== boardId) return board;
         
         const newCol: KanbanColumnData = {
            id: title.toLowerCase().replace(/\s/g, '-'),
            title,
-           color: '#E0E0E0', // Cor Padrão (cinza)
+           color: '#E0E0E0', 
            cards: []
         };
         return { ...board, columns: [...board.columns, newCol] };
-     }));
+     });
+     
+     updateBoardState(newBoards, boardId);
   };
 
-  const moveCard = (boardId: string, result: DropResult) => {
-    const { source, destination } = result;
-    if (!destination) return;
-    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
-
-    setBoards(prevBoards => {
-      const newBoards = [...prevBoards];
-      const boardIndex = newBoards.findIndex(b => b.id === boardId);
-      if (boardIndex === -1) return prevBoards;
-
-      const board = { ...newBoards[boardIndex] };
-      const columns = [...board.columns]; // Cópia rasa das colunas
-
-      const sourceColIndex = columns.findIndex(col => col.id === source.droppableId);
-      const destColIndex = columns.findIndex(col => col.id === destination.droppableId);
-
-      const sourceCol = { ...columns[sourceColIndex], cards: [...columns[sourceColIndex].cards] };
-      const destCol = { ...columns[destColIndex], cards: [...columns[destColIndex].cards] };
-
-      const [movedCard] = sourceCol.cards.splice(source.index, 1);
-
-      if (sourceCol.id === destCol.id) {
-        sourceCol.cards.splice(destination.index, 0, movedCard);
-        columns[sourceColIndex] = sourceCol;
-      } else {
-        const updatedCard = { ...movedCard, columnId: destCol.id as ColumnId };
-        destCol.cards.splice(destination.index, 0, updatedCard);
-        columns[sourceColIndex] = sourceCol;
-        columns[destColIndex] = destCol;
-      }
-
-      board.columns = columns;
-      newBoards[boardIndex] = board;
-      return newBoards;
-    });
-  };
-
-  const deleteBoard = (boardId: string) => {
-    if (boardId === 'operacional') {
-      alert("O quadro Operacional não pode ser excluído.");
-      return;
-    }
-    if (confirm("Tem certeza que deseja excluir este quadro?")) {
-      setBoards(prev => prev.filter(b => b.id !== boardId));
-    }
-  };
-
-  const deleteCard = (boardId: string, cardId: string) => {
-    setBoards(prevBoards => prevBoards.map(board => {
-      if (board.id !== boardId) return board;
-
-      const newColumns = board.columns.map(col => ({
-        ...col,
-        cards: col.cards.filter(c => c.id !== cardId) // Remove o card pelo ID
-      }));
-
-      return { ...board, columns: newColumns };
-    }));
-  };
-
+  // --- RENOMEAR COLUNA ---
   const renameColumn = (boardId: string, columnId: string, newTitle: string) => {
-    setBoards(prev => prev.map(board => {
+    const newBoards = boards.map(board => {
       if (board.id !== boardId) return board;
       
       const newColumns = board.columns.map(col => 
         col.id === columnId ? { ...col, title: newTitle } : col
       );
       return { ...board, columns: newColumns };
-    }));
+    });
+
+    updateBoardState(newBoards, boardId);
   };
 
+  // --- DELETAR COLUNA ---
   const deleteColumn = (boardId: string, columnId: string) => {
-    setBoards(prev => prev.map(board => {
+    const newBoards = boards.map(board => {
       if (board.id !== boardId) return board;
       
       const newColumns = board.columns.filter(col => col.id !== columnId);
       return { ...board, columns: newColumns };
-    }));
+    });
+
+    updateBoardState(newBoards, boardId);
   };
 
+  // --- MUDAR COR DA COLUNA ---
   const changeColumnColor = (boardId: string, columnId: string, newColor: string) => {
-    setBoards(prev => prev.map(board => {
+    const newBoards = boards.map(board => {
       if (board.id !== boardId) return board;
       
       const newColumns = board.columns.map(col => 
         col.id === columnId ? { ...col, color: newColor } : col
       );
       return { ...board, columns: newColumns };
-    }));
+    });
+
+    updateBoardState(newBoards, boardId);
   };
 
   return (
-    <BoardContext.Provider value={{ boards, createNewBoard, deleteBoard, deleteCard, 
-      moveCard, updateCard, addCardToBoard, addColumnToBoard, renameColumn, deleteColumn, changeColumnColor 
+    <BoardContext.Provider value={{ 
+        boards, createNewBoard, deleteBoard, deleteCard, 
+        moveCard, updateCard, addCardToBoard, addColumnToBoard, 
+        renameColumn, deleteColumn, changeColumnColor 
     }}>
       {children}
     </BoardContext.Provider>

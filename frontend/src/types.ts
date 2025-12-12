@@ -9,7 +9,6 @@ export interface CardView {
   comment?: string;
   createdAt?: string;
   
-  // Campos opcionais para visualização de empréstimo no Kanban
   dueDate?: string;
   cpf?: string;
   isLate?: boolean;
@@ -29,22 +28,28 @@ export interface BoardView {
 }
 
 // --- CLIENTES ---
+
+// O Input segue o padrão do formulário (camelCase)
 export interface ClienteInput {
   nome: string;
-  cpf: number | string; // O BD pede Number, mas o input é string. O adapter trata.
-  Telefone: string;     // No BD está Maiúsculo
-  DataNasc?: string;    // No BD está Maiúsculo
-  CEP?: number | string;// No BD está Maiúsculo
+  cpf: number | string;
+  telefone: string;      // O formulário envia minúsculo
+  dataNasc?: string;     // O formulário envia minúsculo
+  cep?: number | string; // O formulário envia minúsculo
+  
+  // Opcionais para compatibilidade com backend direto se necessário
+  Telefone?: string;
+  DataNasc?: string;
+  CEP?: number | string;
 }
 
 export interface ClienteView {
   id: string;
   nome: string;
-  cpf: string;          // No front usamos string formatada
+  cpf: string;
   telefone: string;
   dataNasc?: string;
   cep?: string;
-  // Esses campos não existem no Schema do BD, mas usamos na lógica do front (status)
   emprestimosAtivos?: number; 
 }
 
@@ -57,25 +62,26 @@ export interface LivroInput {
   editora?: string;
   volume?: number;
   data_lancamento?: string;
+  disponivel?: boolean;
 }
 
 export interface LivroView {
   id: string;
   titulo: string;
-  isbn: string;          // String para facilitar busca (.includes)
-  genero: string;        // Se for null, o adaptador põe "Não informado"
   autor: string;
-  editora: string;
-  data: string;          // Formatada PT-BR (ex: "25/10/2023")
-  disponivel: boolean;   // Booleano é melhor para ifs
-  volume: number | string;
+  editora: string,
+  isbn: string;
+  genero: string;
+  data: string;
+  volume: string;
+  disponivel: boolean;
 }
 
 // --- EMPRÉSTIMOS ---
 export interface EmprestimoInput {
   titulo: string;
   isbn: number | string;
-  cpf_emprestimo: number | string; // Nome exato do BD para o envio
+  cpf_emprestimo: number | string;
   data_emissao?: string;
   data_devolucao?: string;
   comentario?: string;
@@ -86,14 +92,14 @@ export interface EmprestimoView {
   id: string;
   titulo: string;
   isbn: string;
-  cpfCliente: string;   // Mapeado de 'cpf_emprestimo'
-  dataEmissao: string;  // Mapeado de 'data_emissao'
-  dataDevolucao: string;// Mapeado de 'data_devolucao'
-  status: 'em_dia' | 'atrasado' | 'pendente';
+  cpfCliente: string;
+  dataEmissao: string;
+  dataDevolucao: string;
+  status: 'em_dia' | 'atrasado' | 'pendente' | 'devolvido';
   comentario?: string;
 }
 
-// Definição genérica para colunas de tabela
+// Genérico para tabelas
 export interface ColumnDef<T> {
   header: string;
   accessor?: keyof T;

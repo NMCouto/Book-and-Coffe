@@ -48,6 +48,22 @@ export function KanbanCard({ card, index, onClick }: KanbanCardProps) {
             </div>
           )}
 
+          <div className="kanban-card-content">
+              <span className="kanban-card-title">{card.title}</span>
+              
+              {/* MOSTRAR CPF E DATA SE EXISTIREM (Solicitado) */}
+              {(card.cpf || card.dueDate) && (
+                  <div style={{marginTop: 8, fontSize: '0.75rem', color: '#666'}}>
+                      {card.cpf && <div><strong>CPF:</strong> {card.cpf}</div>}
+                      {card.dueDate && (
+                          <div style={{color: card.isLate ? 'var(--status-danger-text)' : 'inherit'}}>
+                              <strong>Venc:</strong> {new Date(card.dueDate).toLocaleDateString('pt-BR')}
+                          </div>
+                      )}
+                  </div>
+              )}
+          </div>
+
           {/* Mantém a prioridade original se NÃO for um card de devolução (opcional, ou mostra ambos) */}
           {!card.isLate && !card.dueDate && (
              <div className="card-meta">

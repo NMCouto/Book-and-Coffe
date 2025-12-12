@@ -29,7 +29,7 @@ export function Clientes() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 11;
 
-  // Estado para controlar o modal
+  const [editingClient, setEditingClient] = useState<ClienteView | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export function Clientes() {
         ClientesService.getAll(),
         EmprestimosService.getAll()
       ]);
-      console.log("Lista recarregada:", listaClientes); // Debug
+      //console.log("Lista recarregada:", listaClientes); // Debug
       setClientes(listaClientes);
       setEmprestimos(listaEmprestimos);
     } catch (error) {
@@ -53,23 +53,37 @@ export function Clientes() {
     }
   };
 
-  // --- CRIAR CLIENTE ---
-  const handleSaveCliente = async (novoCliente: any) => {
-    try {
-        console.log("Enviando para o Service:", novoCliente);
-        
-        // Espera salvar (no banco ou na memória)
-        await ClientesService.create(novoCliente);
-        
-        // IMPORTANTE: Recarrega os dados imediatamente após salvar
-        await carregarDados(); 
-        
-        // Fecha o modal
-        setIsModalOpen(false);
+  // --- FUNÇÃO DE ABRIR MODAL PARA EDIÇÃO ---
+  const handleEdit = (cliente: ClienteView) => {
+    setEditingClient(cliente); // Define quem vai ser editado
+    setIsModalOpen(true);      // Abre o modal
+  };
 
-        showAlert({ title: 'Sucesso', message: 'Cliente cadastrado!', type: 'alert' });
+  // --- FUNÇÃO DE ABRIR MODAL PARA CRIAÇÃO ---
+  const handleNew = () => {
+    setEditingClient(null); // Limpa edição (é novo)
+    setIsModalOpen(true);
+  };
+
+  // --- SALVAR (CRIA OU ATUALIZA) ---
+  const handleSaveCliente = async (dados: any) => {
+    try {
+        if (editingClient) {
+            // MODO EDIÇÃO
+            console.log("Atualizando cliente:", editingClient.id);
+            await ClientesService.update(editingClient.id, dados);
+        } else {
+            // MODO CRIAÇÃO
+            console.log("Criando novo cliente");
+            await ClientesService.create(dados);
+        }
+        
+        await carregarDados();
+        setIsModalOpen(false);
+        setEditingClient(null); // Limpa estado após salvar
+
     } catch (error) {
-        console.error("Erro ao salvar cliente:", error);
+        console.error("Erro ao salvar:", error);
     }
   };
 
@@ -122,8 +136,18 @@ export function Clientes() {
       className: 'action-cell',
       render: (item) => (
         <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-          <button className="icon-btn edit" title="Editar"><PencilSimple size={20} /></button>
-          <button className="icon-btn delete" onClick={() => handleDelete(item.id)} title="Excluir"><Trash size={20} /></button>
+          {/* BOTÃO EDITAR CONECTADO */}
+          <button 
+            className="icon-btn edit" 
+            title="Editar"
+            onClick={() => handleEdit(item)} 
+          >
+            <PencilSimple size={20} />
+          </button>
+          
+          <button className="icon-btn delete" onClick={() => handleDelete(item.id)} title="Excluir">
+            <Trash size={20} />
+          </button>
         </div>
       )
     }
@@ -171,9 +195,8 @@ export function Clientes() {
         searchTerm={searchTerm} 
         onSearchChange={(t) => { setSearchTerm(t); setCurrentPage(1); }} 
         newItemLabel="Novo Cliente" 
-        onNewItem={() => setIsModalOpen(true)} 
+        onNewItem={handleNew}
       >
-        {/* NOVOS BOTÕES DE FILTRO */}
         <div className="filter-tabs-group">
           <button 
             className={`filter-tab-btn ${filterStatus === 'todos' ? 'active' : ''}`} 
@@ -214,8 +237,9 @@ export function Clientes() {
 
       <CadastroCliente 
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => { setIsModalOpen(false); setEditingClient(null); }}
         onSave={handleSaveCliente}
+        clienteParaEditar={editingClient} // Passa o cliente selecionado
       />
     </div>
   );

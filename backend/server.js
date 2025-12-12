@@ -6,7 +6,7 @@ import cors from "cors";
 import registrarRotasLivros from "./rotas/rotasLivros.js";
 import registrarRotasClientes from "./rotas/rotasClientes.js";
 import registrarRotasEmprestimos from "./rotas/rotasEmprestimos.js";
-import registrarRotasCards from "./rotas/cards.js";
+import registrarRotasBoards from "./rotas/rotasQuadros.js";
 
 dotenv.config();
 
@@ -35,7 +35,7 @@ connectDB();
 registrarRotasLivros(app);
 registrarRotasClientes(app);
 registrarRotasEmprestimos(app);
-registrarRotasCards(app);
+registrarRotasBoards(app);
 
 
 app.listen(PORT, () => {

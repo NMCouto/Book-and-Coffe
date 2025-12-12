@@ -1,11 +1,12 @@
 import { api } from './api';
-import type { LivroView } from '../types';
+import type { LivroView, LivroInput } from '../types';
 import { adaptLivro } from '../utils/adapters';
 import { LIVROS_MOCK } from '../mocks/livrosMocks';
 
 let livrosLocal = [...LIVROS_MOCK];
 
 export const LivrosService = {
+  
   getAll: async (): Promise<LivroView[]> => {
     try {
       const response = await api.get('/livros', { timeout: 2000 });
@@ -15,30 +16,56 @@ export const LivrosService = {
     }
   },
 
-  create: async (novo: any): Promise<void> => {
-    // 1. PREPARAR PAYLOAD
+  create: async (novo: LivroInput): Promise<void> => {
     const payload = {
         titulo: novo.titulo,
         autor: novo.autor,
         genero: novo.genero,
         editora: novo.editora,
-        // Converte ISBN string para Number
-        isbn: Number(String(novo.isbn).replace(/\D/g, '')),
-        volume: Number(novo.volume) || 1,
-        // Backend define padrão "Disponível", não precisa mandar se for novo
+        isbn: Number(String(novo.isbn).replace(/\D/g, '')), 
+        volume: novo.volume ? Number(novo.volume) : undefined,
+        data_lancamento: novo.data_lancamento,
+        disponibilidade: "Disponível" 
     };
 
     try {
       await api.post('/livros', payload);
     } catch (error) {
       console.warn("⚠️ Backend Offline. Salvando livro no Mock.");
-      const novoMock = { 
-          _id: Math.random().toString(), 
-          ...payload,
-          disponibilidade: "Disponível" // Simula o default do Mongoose
-      };
+      const novoMock = { _id: Math.random().toString(), ...payload };
       // @ts-ignore
       livrosLocal.push(novoMock);
+    }
+  },
+
+  // --- ATUALIZAR (Com lógica de disponibilidade) ---
+  update: async (id: string, dados: LivroInput): Promise<void> => {
+    const payload: any = {
+        titulo: dados.titulo,
+        autor: dados.autor,
+        genero: dados.genero,
+        editora: dados.editora,
+        isbn: Number(String(dados.isbn).replace(/\D/g, '')),
+        volume: dados.volume ? Number(dados.volume) : undefined,
+        data_lancamento: dados.data_lancamento
+    };
+
+    // Lógica para converter Boolean -> String do Backend
+    if (dados.disponivel !== undefined) {
+        payload.disponibilidade = dados.disponivel ? "Disponível" : "Indisponível";
+    }
+
+    try {
+      await api.put(`/livros/${id}`, payload);
+    } catch (error) {
+      console.warn("⚠️ Backend Offline. Atualizando Mock.");
+      
+      livrosLocal = livrosLocal.map(l => {
+         if (l._id === id || l.id === id) {
+             return { ...l, ...payload };
+         }
+         return l;
+      });
     }
   },
 
