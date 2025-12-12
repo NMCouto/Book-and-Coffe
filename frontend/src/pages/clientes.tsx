@@ -1,172 +1,222 @@
 import { useState, useEffect, useMemo } from 'react';
-import { PencilSimple, Trash } from 'phosphor-react';
-import '../styles/paginasTabelas.css';
-
-// --- Componentes Genéricos ---
-import { GenericToolbar } from '../components/ui/GenericToolbar';
-import { GenericTable } from '../components/ui/GenericTable';
-import { Pagination } from '../components/ui/Paginacao'; 
-import { useAlert } from '../contexts/AlertContext';
-
-// --- Específicos ---
+import { Trash, PencilSimple } from 'phosphor-react';
 import { TopNavigation } from '../components/ui/TopNavigation';
+import { GenericTable } from '../components/ui/GenericTable';
+import { GenericToolbar } from '../components/ui/GenericToolbar';
+import { Pagination } from '../components/ui/Paginacao';
+import { useAlert } from '../contexts/AlertContext';
 import { CadastroCliente } from '../components/cadastro_cliente';
-import { ClientesService } from '../services/clientesService';
-import type { ClienteView, ColumnDef } from '../types';
 
-const ITEMS_PER_PAGE = 11;
+// Services & Types
+import { ClientesService } from '../services/clientesService';
+import { EmprestimosService } from '../services/emprestimosService';
+import type { ClienteView, EmprestimoView, ColumnDef } from '../types';
+type FilterType = 'todos' | 'com_emprestimos' | 'sem_emprestimos';
+
+// Styles
+import '../styles/paginasTabelas.css';
+import '../styles/emprestimos.css'; 
 
 export function Clientes() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState<'todos' | 'ativos' | 'N ativos'>('todos');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [clientesData, setClientesData] = useState<ClienteView[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const { showAlert } = useAlert();
+  
+  const [clientes, setClientes] = useState<ClienteView[]>([]);
+  const [emprestimos, setEmprestimos] = useState<EmprestimoView[]>([]);
+  const [filterStatus, setFilterStatus] = useState<FilterType>('todos');
+  
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 11;
 
-  // Função para Carregar Dados (Backend ou Mock)
-  async function loadClientes() {
+  // Estado para controlar o modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    carregarDados();
+  }, []);
+
+  const carregarDados = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const dados = await ClientesService.getAll(); // O Serviço já traz adaptado!
-      setClientesData(dados);
+      const [listaClientes, listaEmprestimos] = await Promise.all([
+        ClientesService.getAll(),
+        EmprestimosService.getAll()
+      ]);
+      console.log("Lista recarregada:", listaClientes); // Debug
+      setClientes(listaClientes);
+      setEmprestimos(listaEmprestimos);
     } catch (error) {
-      console.error("Erro ao carregar clientes", error);
+      console.error("Erro ao carregar dados", error);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
-  // Carrega ao abrir a tela
-  useEffect(() => {
-    loadClientes();
-  }, []);
+  // --- CRIAR CLIENTE ---
+  const handleSaveCliente = async (novoCliente: any) => {
+    try {
+        console.log("Enviando para o Service:", novoCliente);
+        
+        // Espera salvar (no banco ou na memória)
+        await ClientesService.create(novoCliente);
+        
+        // IMPORTANTE: Recarrega os dados imediatamente após salvar
+        await carregarDados(); 
+        
+        // Fecha o modal
+        setIsModalOpen(false);
 
-  // Função de Deletar
+        showAlert({ title: 'Sucesso', message: 'Cliente cadastrado!', type: 'alert' });
+    } catch (error) {
+        console.error("Erro ao salvar cliente:", error);
+    }
+  };
+
   const handleDelete = async (id: string) => {
     const confirmado = await showAlert({
         title: 'Excluir Cliente',
-        message: 'Tem certeza que deseja excluir este cliente? Essa ação não pode ser desfeita.',
+        message: 'Tem certeza que deseja excluir este cliente?',
         confirmText: 'Sim',
         cancelText: 'Cancelar'
     });
 
     if (confirmado) {
         await ClientesService.delete(id);
-        loadClientes();
+        carregarDados();
     }
   };
 
-  // --- CONFIGURAÇÃO DAS COLUNAS (A parte que especializa a tabela) ---
-  const columns = useMemo<ColumnDef<ClienteView>[]>(() => [
-    { header: 'Nome do cliente', accessor: 'nome' },
-    { header: 'CPF', accessor: 'cpf', className: 'text-center' },
-    { header: 'Telefone', accessor: 'telefone', className: 'text-center' },
-    { header: 'Num. Empréstimos', accessor: 'emprestimosAtivos', className: 'text-center' },
+  // Colunas
+  const columns: ColumnDef<ClienteView>[] = [
+    { header: 'Nome do cliente', accessor: 'nome', className: 'text-left' },
+    { header: 'CPF', accessor: 'cpf', className: 'text-left' },
+    { header: 'Telefone', accessor: 'telefone', className: 'text-left' },
+    { 
+      header: 'Status', 
+      className: 'text-center',
+      render: (cliente) => {
+        const emprestimosDoCliente = emprestimos.filter(e => e.cpfCliente === cliente.cpf);
+        const possuiAtraso = emprestimosDoCliente.some(e => e.status === 'atrasado');
+        
+        let statusClass = 'status-ok'; // Verde por padrão
+        let texto = 'Regular';
+
+        if (possuiAtraso) {
+            statusClass = 'status-late'; // Vermelho
+            texto = 'Pendente';
+        } else if (emprestimosDoCliente.length === 0) {
+            statusClass = 'status-ok';  // cinza
+            texto = 'Sem empréstimos';
+        }
+
+        return (
+          <span className={`status-badge ${statusClass}`}>
+            {texto}
+          </span>
+        );
+      }
+    },
     {
       header: 'Ações',
-      className: 'text-center',
-      render: (cliente) => (
-        <div className="action-cell">
-           <button className="icon-btn edit"><PencilSimple size={20} /></button>
-           <button className="icon-btn delete" onClick={() => handleDelete(cliente.id)}>
-             <Trash size={20} />
-           </button>
+      className: 'action-cell',
+      render: (item) => (
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+          <button className="icon-btn edit" title="Editar"><PencilSimple size={20} /></button>
+          <button className="icon-btn delete" onClick={() => handleDelete(item.id)} title="Excluir"><Trash size={20} /></button>
         </div>
       )
     }
-  ], []); // Array vazio no final garante que a config não seja recriada à toa
+  ];
 
-  // Lógica de Filtragem (Nome OU CPF)
-  const clientesFiltrados = clientesData.filter((cliente) => {
-    // Converte tudo para minúsculo para a busca não diferenciar maiúsculas
-    const searchLower = searchTerm.toLowerCase();
+  // --- FILTROS ---
+  const filteredData = useMemo(() => {
+    return clientes.filter(cliente => {
+      const term = searchTerm.toLowerCase();
+      const matchesSearch = 
+        cliente.nome.toLowerCase().includes(term) || 
+        cliente.cpf.includes(term);
 
-    // --- Filtro de Status ---
-    let matchStatus = true;
-    if (filterStatus === 'ativos') {
-      matchStatus = cliente.ativo === true;
-    } else if (filterStatus === 'N ativos') {
-      matchStatus = cliente.ativo === false;
-    }
-    // Se for 'todos', matchStatus continua true
-    
-    return (
-      cliente.nome.toLowerCase().includes(searchLower) || 
-      cliente.cpf.includes(searchTerm)
-    ) && matchStatus;
-  });
+      if (!matchesSearch) return false;
 
-  // LÓGICA DE FATIAMENTO (Slice)
-  const totalItems = clientesFiltrados.length;
-  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-  
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  
-  const clientesAtuais = clientesFiltrados.slice(startIndex, endIndex);
+      const emprestimosDoCliente = emprestimos.filter(e => e.cpfCliente === cliente.cpf);
+      const temAtivos = emprestimosDoCliente.length > 0;
 
-  // COMANDOS DE TECLADO (Igual ao Livros)
+      if (filterStatus === 'com_emprestimos') return temAtivos;
+      if (filterStatus === 'sem_emprestimos') return !temAtivos;
+
+      return true; // 'todos'
+    });
+  }, [clientes, emprestimos, searchTerm, filterStatus]);
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const currentData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  // Teclado
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignora se o usuário estiver digitando no input de busca
       if ((e.target as HTMLElement).tagName === 'INPUT') return;
-
-      if (e.key === 'ArrowLeft') {
-        setCurrentPage(prev => Math.max(prev - 1, 1));
-      } 
-      else if (e.key === 'ArrowRight') {
-        setCurrentPage(prev => Math.min(prev + 1, totalPages));
-      }
+      if (e.key === 'ArrowLeft') setCurrentPage(p => Math.max(p - 1, 1));
+      if (e.key === 'ArrowRight') setCurrentPage(p => Math.min(p + 1, totalPages));
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [totalPages]); 
-
-  // Resetar para página 1 se pesquisar algo
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm]);
+  }, [totalPages]);
 
   return (
     <div className="page-container">
-
       <TopNavigation />
 
-      {/* Toolbar Genérica + Filtros Específicos */}
-      <GenericToolbar
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        onNewItem={() => setIsModalOpen(true)}
-        newItemLabel="Novo Cliente"
+      <GenericToolbar 
+        searchTerm={searchTerm} 
+        onSearchChange={(t) => { setSearchTerm(t); setCurrentPage(1); }} 
+        newItemLabel="Novo Cliente" 
+        onNewItem={() => setIsModalOpen(true)} 
       >
-         {/* INJEÇÃO DE CONTEÚDO ESPECÍFICO DE CLIENTES */}
-         <div className="status-toggle-group">
-            <button className={`status-toggle-btn ${filterStatus === 'todos' ? 'active' : ''}`} onClick={() => setFilterStatus('todos')}>Todos</button>
-            <button className={`status-toggle-btn ${filterStatus === 'ativos' ? 'active' : ''}`} onClick={() => setFilterStatus('ativos')}>Com Empréstimos</button>
-            <button className={`status-toggle-btn ${filterStatus === 'N ativos' ? 'active' : ''}`} onClick={() => setFilterStatus('N ativos')}>Sem Empréstimos</button>
-         </div>
+        {/* NOVOS BOTÕES DE FILTRO */}
+        <div className="filter-tabs-group">
+          <button 
+            className={`filter-tab-btn ${filterStatus === 'todos' ? 'active' : ''}`} 
+            onClick={() => { setFilterStatus('todos'); setCurrentPage(1); }}
+          >
+            Todos
+          </button>
+          <button 
+            className={`filter-tab-btn ${filterStatus === 'com_emprestimos' ? 'active' : ''}`} 
+            onClick={() => { setFilterStatus('com_emprestimos'); setCurrentPage(1); }}
+          >
+            Com Empréstimos
+          </button>
+          <button 
+            className={`filter-tab-btn ${filterStatus === 'sem_emprestimos' ? 'active' : ''}`} 
+            onClick={() => { setFilterStatus('sem_emprestimos'); setCurrentPage(1); }}
+          >
+            Sem Empréstimos
+          </button>
+        </div>
       </GenericToolbar>
 
       <div className="table-container">
-        {/* Tabela Genérica configurada com as colunas de Cliente */}
         <GenericTable 
-          data={clientesAtuais}
-          columns={columns}
-          isLoading={isLoading}
-          itemsPerPage={ITEMS_PER_PAGE}
-        />
-
-        <Pagination 
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
+          data={currentData} 
+          columns={columns} 
+          isLoading={isLoading} 
+          itemsPerPage={itemsPerPage} 
+          emptyMessage="Nenhum cliente encontrado."
         />
       </div>
 
-      <CadastroCliente isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); loadClientes(); }} />
+      <Pagination 
+        currentPage={currentPage} 
+        totalPages={totalPages} 
+        onPageChange={setCurrentPage} 
+      />
+
+      <CadastroCliente 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveCliente}
+      />
     </div>
   );
 }

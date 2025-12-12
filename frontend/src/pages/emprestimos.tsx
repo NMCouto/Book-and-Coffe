@@ -122,6 +122,17 @@ export function Emprestimos() {
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const currentData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
+  // Teclado
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.target as HTMLElement).tagName === 'INPUT') return;
+      if (e.key === 'ArrowLeft') setCurrentPage(p => Math.max(p - 1, 1));
+      if (e.key === 'ArrowRight') setCurrentPage(p => Math.min(p + 1, totalPages));
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [totalPages]);
+
   return (
     <div className="page-container">
       <TopNavigation />
